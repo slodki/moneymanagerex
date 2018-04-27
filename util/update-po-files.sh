@@ -19,6 +19,7 @@ POT=MoneyManagerEx.pot
 
 echo "Extracting strings into po/$POT..."
 find src -name \*.cpp -o -name \*.h | xgettext -f - $XGETTEXT_ARGS -o po/$POT
+wxrc -g gui/*.xrc | xgettext --join-existing $XGETTEXT_ARGS -o po/$POT -
 
 echo "Merging into *.po..."
 for p in po/*.po ; do

@@ -81,6 +81,9 @@
 
 #include <stack>
 
+#include <wx/xrc/xmlres.h>
+#include "guiTestAboutDlg.h"
+
 //----------------------------------------------------------------------------
 
 int REPEAT_TRANS_DELAY_TIME = 7000; // 7 seconds
@@ -2592,6 +2595,7 @@ void mmGUIFrame::OnReportBug(wxCommandEvent& WXUNUSED(event))
 void mmGUIFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 {
     mmAboutDialog(this,0).ShowModal();
+    guiTestAboutDlg(this).ShowModal();
 }
 //----------------------------------------------------------------------------
 

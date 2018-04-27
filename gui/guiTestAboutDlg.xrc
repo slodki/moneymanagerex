@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resource xmlns="http://www.wxwidgets.org/wxxrc">
+  <object class="wxDialog" name="guiTestAboutDlg">
+    <title>About MMEX</title>
+    <centered>1</centered>
+    <style>wxDEFAULT_DIALOG_STYLE</style>
+    <size>500,300</size>
+    <object class="wxBoxSizer">
+      <orient>wxVERTICAL</orient>
+      <object class="sizeritem" name="boxSizer19">
+        <flag>wxALL|wxALIGN_CENTER_HORIZONTAL</flag>
+        <border>5</border>
+        <object class="wxBoxSizer">
+          <orient>wxHORIZONTAL</orient>
+          <object class="sizeritem">
+            <flag>wxALL</flag>
+            <border>5</border>
+            <object class="wxStaticBitmap" name="m_logo">
+              <bitmap>mmexlogo.png</bitmap>
+              <size>100,100</size>
+            </object>
+          </object>
+          <object class="sizeritem">
+            <flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+            <border>5</border>
+            <object class="wxStaticText" name="m_nameVersion">
+              <label>MMEX version</label>
+              <style/>
+              <font>
+                <sysfont>wxSYS_DEFAULT_GUI_FONT</sysfont>
+                <style>normal</style>
+                <weight>bold</weight>
+                <underlined>0</underlined>
+              </font>
+            </object>
+          </object>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL|wxALIGN_CENTER_HORIZONTAL</flag>
+        <border>5</border>
+        <object class="wxStaticText" name="m_longerText">
+          <label>Longer text with description etc. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin nibh augue, suscipit a, scelerisque sed, lacinia in, mi. Cras vel lorem. Etiam pellentesque aliquet tellus. Phasellus pharetra nulla ac diam. Quisque semper justo at risus.</label>
+          <style/>
+          <wrap>400</wrap>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL|wxALIGN_CENTER_HORIZONTAL</flag>
+        <border>5</border>
+        <option>1</option>
+        <object class="wxStdDialogButtonSizer" name="m_stdBtnSizer21">
+          <object class="button">
+            <object class="wxButton" name="wxID_OK">
+              <label/>
+              <style/>
+              <bg/>
+              <fg/>
+              <default>1</default>
+            </object>
+          </object>
+        </object>
+      </object>
+    </object>
+  </object>
+</resource>

@@ -31,6 +31,9 @@
 #include "Model_Report.h"
 
 #include <wx/cmdline.h>
+#include <wx/xrc/xmlres.h>
+
+#include "guiTestAboutDlg.h"
 
 //----------------------------------------------------------------------------
 wxIMPLEMENT_APP(mmGUIApp);
@@ -184,9 +187,6 @@ bool OnInitImpl(mmGUIApp* app)
     /* Initialize CURL */
     curl_global_init(CURL_GLOBAL_ALL);
 
-    /* Initialize Image Handlers */
-    wxInitAllImageHandlers();
-
     app->m_setting_db = new wxSQLite3Database();
     app->m_setting_db->Open(mmex::getPathUser(mmex::SETTINGS));
     Model_Setting::instance(app->m_setting_db);
@@ -199,6 +199,11 @@ bool OnInitImpl(mmGUIApp* app)
 
     /* set preffered GUI language */
     app->setGUILanguage(Option::instance().Language());
+
+    /* load resources */
+    wxInitAllImageHandlers();
+    wxXmlResource::Get()->InitAllHandlers();
+    guiTestAboutDlgInit();
 
     /* Was App Maximized? */
     bool isMax = Model_Setting::instance().GetBoolSetting("ISMAXIMIZED", true);
