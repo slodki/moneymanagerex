@@ -25,8 +25,6 @@ Copyright (C) 2018 Stefano Giorgio (stef145g)
 #include <wx/log.h>
 #include "Table.h"
 #include "singleton.h"
-#include <rapidjson/prettywriter.h>
-using namespace rapidjson;
 
 class wxSQLite3Statement;
 class wxSQLite3Database;
@@ -50,11 +48,13 @@ namespace std
 }
 #endif
 
-class ModelBase
+class ModelBase : public DB_Table
 {
 public:
     ModelBase():db_(0) {};
     virtual ~ModelBase() {};
+    virtual wxString GetTableStatsAsJson() const = 0;
+    virtual void show_statistics() const = 0;
 
 public:
     void Savepoint()
@@ -83,10 +83,6 @@ protected:
         return date;
     }
 
-public:
-    virtual wxString  GetTableStatsAsJson() const = 0;
-    virtual void show_statistics() const = 0;
-
 protected:
     wxSQLite3Database* db_;
 };
@@ -99,6 +95,11 @@ public:
     using DB_TABLE::get;
     using DB_TABLE::save;
     using DB_TABLE::remove;
+    virtual wxString GetTableStatsAsJson() const { return DB_TABLE::GetTableStatsAsJson(); }
+    virtual void show_statistics() const { DB_TABLE::show_statistics(); }
+    virtual wxString query() const { return DB_TABLE::query(); }
+    virtual wxString name() const { return DB_TABLE::name(); }
+    virtual size_t num_columns() const { return DB_TABLE::num_columns(); }
 
     typedef typename DB_TABLE::COLUMN COLUMN;
     /** Return a list of Data record addresses (Data_Set) derived directly from the database. */
@@ -202,41 +203,4 @@ public:
         }       
     }
 
-    // Return accomulated table stats as a json string
-    wxString  GetTableStatsAsJson() const
-    {
-        StringBuffer json_buffer;
-        Writer<StringBuffer> json_writer(json_buffer);
-        json_writer.StartObject();
-        json_writer.Key("table");
-        json_writer.String(this->name().c_str());
-        json_writer.Key("cached");
-        json_writer.Int(this->cache_.size());
-        json_writer.Key("index_by_id");
-        json_writer.Int(this->index_by_id_.size());
-        json_writer.Key("hit");
-        json_writer.Int(this->hit_);
-        json_writer.Key("miss");
-        json_writer.Int(this->miss_);
-        json_writer.Key("skip");
-        json_writer.Int(this->skip_);
-        json_writer.EndObject();
-
-        wxLogDebug("======== Model.h : GetTableStatsAsJson =======");
-        wxLogDebug("%s", json_buffer.GetString());
-
-        return json_buffer.GetString();
-    }
-
-    /** Show table statistics*/
-    void show_statistics() const
-    {
-        size_t cache_size = this->cache_.size();
-        size_t index_by_id_size = this->index_by_id_.size();
-#ifdef _WIN64
-        wxLogDebug("%s : (cache %llu, index_by_id %llu, hit %llu, miss %llu, skip %llu)", this->name(), cache_size, index_by_id_size, this->hit_, this->miss_, this->skip_);
-#else
-        wxLogDebug("%s : (cache %lu, index_by_id %lu, hit %lu, miss %lu, skip %lu)", this->name(), cache_size, index_by_id_size, this->hit_, this->miss_, this->skip_);
-#endif
-    }
 };

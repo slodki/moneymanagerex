@@ -43,6 +43,9 @@ struct DB_Table
     virtual wxString query() const { return this->query_; }
     virtual size_t num_columns() const = 0;
     virtual wxString name() const = 0;
+    virtual wxString GetTableStatsAsJson() const = 0;
+    virtual void show_statistics() const = 0;
+
 
     bool exists(wxSQLite3Database* db) const
     {
