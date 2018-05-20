@@ -19,7 +19,7 @@
 
 #include <wx/wizard.h>
 #include <wx/frame.h>
-#include "rapidjson/document.h"
+#include <rapidjson/document.h>
 #include "option.h"
 
 class mmUpdate

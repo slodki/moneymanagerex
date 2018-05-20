@@ -38,7 +38,7 @@
 #include "Model_Infotable.h"
 
 #include <algorithm>
-
+#include <rapidjson/pointer.h>
 #include <wx/xml/xml.h>
 #include <wx/spinctrl.h>
 

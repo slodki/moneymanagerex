@@ -43,6 +43,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Model_Payee.h"
 #include "Model_Setting.h"
 #include "Model_Infotable.h"
+#include <rapidjson/pointer.h>
 
 static const wxString TRANSACTION_STATUSES[] =
 {

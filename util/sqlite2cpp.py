@@ -825,12 +825,6 @@ def generate_base_class(header, fields=set):
 #include <wx/intl.h>
 #include <wx/log.h>
 
-#include "rapidjson/document.h"
-#include "rapidjson/pointer.h"
-#include "rapidjson/prettywriter.h"
-#include "rapidjson/stringbuffer.h"
-using namespace rapidjson;
-
 #include "html_template.h"
 using namespace tmpl;
 

@@ -19,6 +19,7 @@
 #include "Model_CustomField.h"
 #include "Model_CustomFieldData.h"
 #include <wx/string.h>
+#include <rapidjson/document.h>
 
 const std::vector<std::pair<Model_CustomField::FIELDTYPE, wxString> > Model_CustomField::FIELDTYPE_CHOICES =
 {

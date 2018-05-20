@@ -25,6 +25,8 @@ Copyright (C) 2018 Stefano Giorgio (stef145g)
 #include <wx/log.h>
 #include "Table.h"
 #include "singleton.h"
+#include <rapidjson/prettywriter.h>
+using namespace rapidjson;
 
 class wxSQLite3Statement;
 class wxSQLite3Database;
