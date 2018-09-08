@@ -20,6 +20,7 @@ RUN echo -e 'quiet=on\ncheck_certificate=off' >> ~/.wgetrc \
       flex \
       fontconfig \
       freetype \
+      fribidi \
       gc \
       gcc-5 \
       gcc-g++ \
@@ -72,19 +73,19 @@ RUN echo -e 'quiet=on\ncheck_certificate=off' >> ~/.wgetrc \
       orc \
       pango \
       pixman \
+      pkg-config \
       sqlite-3 \
- && sed -i 's/REPOPLUS=( slackpkgplus )/REPOPLUS=( slackpkgplus slackonly slackel )/' \
+ && sed -i 's/REPOPLUS=( slackpkgplus )/REPOPLUS=( slackpkgplus slackonly )/' \
       /etc/slackpkg/slackpkgplus.conf \
  && echo "MIRRORPLUS['slackonly']=http://slackonly.com/pub/packages/14.2-x86_64/" \
       >> /etc/slackpkg/slackpkgplus.conf \
- && echo "MIRRORPLUS['slackel']=http://www.slackel.gr/repo/x86_64/current/" \
-      >> /etc/slackpkg/slackpkgplus.conf \
  && slackpkg update gpg && slackpkg update \
  && slackpkg -default_answer=y -batch=on -checkgpg=off install \
-      slackel:wxGTK3 \
-      slackonly:libwebp \
-      slackonly:rapidjson \
-      slackonly:webkitgtk \
+      libwebp \
+      rapidjson \
+      webkitgtk3 \
+      wxGTK3 \
+      wxSQLite3 \
  && rm -rf /var/cache/packages/* /var/lib/slackpkg/* \
            /usr/share/locale/* /usr/man/* \
            /tmp/* ~/.wgetrc slackpkg+*.t?z
