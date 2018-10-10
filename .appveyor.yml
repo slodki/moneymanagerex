@@ -172,7 +172,7 @@ build_script:
 - set "cmake_def=%cmake_def% -DCMAKE_PREFIX_PATH=%curlLibFolder%"
 - cmake --graphviz=mmex.dot -T %tool% -G "Visual Studio %gen%" %cmake_def% ..
 - cmake --build . --target package --config %configuration%
-    -- /maxcpucount /verbosity:minimal /nologo /p:PreferredToolArchitecture=x64
+    -- /maxcpucount /verbosity:n /nologo /p:PreferredToolArchitecture=x64
 
 after_build:
 - clcache -s
