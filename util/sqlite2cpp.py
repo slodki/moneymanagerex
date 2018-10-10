@@ -817,21 +817,21 @@ def generate_base_class(header, fields=set):
     code = header % 'Base class for CRUD SQL tables implementation'
     code += '''#pragma once
 
+#include <wx/wxsqlite3.h>
+#include <wx/intl.h>
+#include <wx/log.h>
 #include <vector>
 #include <map>
 #include <algorithm>
 #include <functional>
-#include <wx/wxsqlite3.h>
-#include <wx/intl.h>
-#include <wx/log.h>
 
-#include "rapidjson/document.h"
-#include "rapidjson/pointer.h"
-#include "rapidjson/prettywriter.h"
-#include "rapidjson/stringbuffer.h"
+#include <rapidjson/document.h>
+#include <rapidjson/pointer.h>
+#include <rapidjson/prettywriter.h>
+#include <rapidjson/stringbuffer.h>
 using namespace rapidjson;
 
-#include "html_template.h"
+#include <html_template.h>
 using namespace tmpl;
 
 class wxString;
