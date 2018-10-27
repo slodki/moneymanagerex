@@ -161,6 +161,8 @@ ADD_EXECUTABLE(${MMEX_EXE} WIN32 MACOSX_BUNDLE
     wizard_newaccount.h
     wizard_newdb.cpp
     wizard_newdb.h
+    wizard_reconcile.cpp
+    wizard_reconcile.h
     wizard_update.cpp
     wizard_update.h
 

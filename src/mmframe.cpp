@@ -61,6 +61,7 @@
 #include "webappdialog.h"
 #include "wizard_newdb.h"
 #include "wizard_newaccount.h"
+#include "wizard_reconcile.h"
 #include "wizard_update.h"
 
 #include "reports/transactions.h"
@@ -102,6 +103,7 @@ EVT_MENU(wxID_EXIT, mmGUIFrame::OnQuit)
 EVT_MENU(MENU_NEWACCT, mmGUIFrame::OnNewAccount)
 EVT_MENU(MENU_ACCTLIST, mmGUIFrame::OnAccountList)
 EVT_MENU(MENU_ACCTEDIT, mmGUIFrame::OnEditAccount)
+EVT_MENU(MENU_ACCTRECON, mmGUIFrame::OnReconcileAccount)
 EVT_MENU(MENU_ACCTDELETE, mmGUIFrame::OnDeleteAccount)
 EVT_MENU(MENU_ACCOUNT_REALLOCATE, mmGUIFrame::OnReallocateAccount)
 EVT_MENU(MENU_ORGCATEGS, mmGUIFrame::OnOrgCategories)
@@ -148,6 +150,7 @@ EVT_UPDATE_UI(MENU_VIEW_TOOLBAR, mmGUIFrame::OnViewToolbarUpdateUI)
 EVT_UPDATE_UI(MENU_VIEW_LINKS, mmGUIFrame::OnViewLinksUpdateUI)
 EVT_MENU(MENU_TREEPOPUP_NEW, mmGUIFrame::OnNewTransaction)
 EVT_MENU(MENU_TREEPOPUP_EDIT, mmGUIFrame::OnPopupEditAccount)
+EVT_MENU(MENU_TREEPOPUP_RECON, mmGUIFrame::OnPopupReconcileAccount)
 EVT_MENU(MENU_TREEPOPUP_REALLOCATE, mmGUIFrame::OnPopupReallocateAccount)
 EVT_MENU(MENU_TREEPOPUP_ACCOUNT_BASE_BALANCE, mmGUIFrame::OnPopupAccountBaseBalance)
 EVT_MENU(MENU_TREEPOPUP_DELETE, mmGUIFrame::OnPopupDeleteAccount)
@@ -164,6 +167,7 @@ EVT_MENU(MENU_STOCKS, mmGUIFrame::OnGotoStocksAccount)
 EVT_MENU(MENU_TREEPOPUP_ACCOUNT_NEW, mmGUIFrame::OnNewAccount)
 EVT_MENU(MENU_TREEPOPUP_ACCOUNT_DELETE, mmGUIFrame::OnDeleteAccount)
 EVT_MENU(MENU_TREEPOPUP_ACCOUNT_EDIT, mmGUIFrame::OnEditAccount)
+EVT_MENU(MENU_TREEPOPUP_ACCOUNT_RECON, mmGUIFrame::OnReconcileAccount)
 EVT_MENU(MENU_TREEPOPUP_ACCOUNT_LIST, mmGUIFrame::OnAccountList)
 EVT_MENU(MENU_TREEPOPUP_ACCOUNT_EXPORT2CSV, mmGUIFrame::OnExportToCSV)
 EVT_MENU(MENU_TREEPOPUP_ACCOUNT_EXPORT2XML, mmGUIFrame::OnExportToXML)
@@ -590,6 +594,7 @@ void mmGUIFrame::menuEnableItems(bool enable)
     menuBar_->FindItem(MENU_NEWACCT)->Enable(enable);
     menuBar_->FindItem(MENU_ACCTLIST)->Enable(enable);
     menuBar_->FindItem(MENU_ACCTEDIT)->Enable(enable);
+    menuBar_->FindItem(MENU_ACCTRECON)->Enable(enable);
     menuBar_->FindItem(MENU_ACCOUNT_REALLOCATE)->Enable(enable);
     menuBar_->FindItem(MENU_ACCTDELETE)->Enable(enable);
 
@@ -1114,6 +1119,20 @@ void mmGUIFrame::OnPopupEditAccount(wxCommandEvent& WXUNUSED(event))
     }
 }
 //----------------------------------------------------------------------------
+void mmGUIFrame::OnPopupReconcileAccount(wxCommandEvent& WXUNUSED(event))
+{
+    if (selectedItemData_)
+    {
+        int data = selectedItemData_->getData();
+        Model_Account::Data* account = Model_Account::instance().get(data);
+        if (account)
+        {
+            reconcileWizard wizard(account, this);
+            if (wizard.RunIt()) createHomePage();
+        }
+    }
+}
+//----------------------------------------------------------------------------
 
 void mmGUIFrame::OnPopupReallocateAccount(wxCommandEvent& WXUNUSED(event))
 {
@@ -1220,6 +1239,7 @@ void mmGUIFrame::showTreePopupMenu(const wxTreeItemId& id, const wxPoint& pt)
                     menu.AppendSeparator();
                 }
                 menu.Append(MENU_TREEPOPUP_EDIT, _("&Edit Account"));
+                menu.Append(MENU_TREEPOPUP_RECON, _("Reconcile Account"));
                 menu.Append(MENU_TREEPOPUP_REALLOCATE, _("&Reallocate Account"));
                 menu.Append(MENU_TREEPOPUP_DELETE, _("&Delete Account"));
                 menu.AppendSeparator();
@@ -1269,6 +1289,7 @@ void mmGUIFrame::showTreePopupMenu(const wxTreeItemId& id, const wxPoint& pt)
             menu.Append(MENU_TREEPOPUP_ACCOUNT_NEW, _("New &Account"));
             menu.Append(MENU_TREEPOPUP_ACCOUNT_DELETE, _("&Delete Account"));
             menu.Append(MENU_TREEPOPUP_ACCOUNT_EDIT, _("&Edit Account"));
+            menu.Append(MENU_TREEPOPUP_ACCOUNT_RECON, _("&Reconcile Account"));
             menu.Append(MENU_TREEPOPUP_ACCOUNT_LIST, _("Account &List (Home)"));
             menu.AppendSeparator();
 
@@ -1582,6 +1603,10 @@ void mmGUIFrame::createMenu()
         , _("&Edit Account"), _("Edit Account"));
     menuItemAcctEdit->SetBitmap(mmBitmap(png::EDIT_ACC));
 
+    wxMenuItem* menuItemAcctRecon = new wxMenuItem(menuAccounts, MENU_ACCTRECON
+        , _("Reconcile Account"), _("Reconcile Account"));
+    menuItemAcctEdit->SetBitmap(mmBitmap(png::EDIT_ACC)); // FIXME: update
+
     wxMenuItem* menuItemReallocateAcct = new wxMenuItem(menuAccounts, MENU_ACCOUNT_REALLOCATE
         , _("&Reallocate Account"), _("Change the account type of an account."));
     menuItemReallocateAcct->SetBitmap(mmBitmap(png::REALLOCATE_ACC));
@@ -1594,6 +1619,7 @@ void mmGUIFrame::createMenu()
     menuAccounts->AppendSeparator();
     menuAccounts->Append(menuItemNewAcct);
     menuAccounts->Append(menuItemAcctEdit);
+    menuAccounts->Append(menuItemAcctRecon);
     menuAccounts->Append(menuItemReallocateAcct);
     menuAccounts->Append(menuItemAcctDelete);
 
@@ -2844,6 +2870,25 @@ void mmGUIFrame::OnEditAccount(wxCommandEvent& WXUNUSED(event))
             updateNavTreeControl();
             createHomePage();
         }
+    }
+}
+//----------------------------------------------------------------------------
+
+void mmGUIFrame::OnReconcileAccount(wxCommandEvent& WXUNUSED(event))
+{
+    const auto &accounts = Model_Account::instance().all(Model_Account::COL_ACCOUNTNAME);
+    if (accounts.empty())
+    {
+        wxMessageBox(_("No account available to reconcile!"), _("Accounts"), wxOK | wxICON_WARNING);
+        return;
+    }
+
+    mmSingleChoiceDialog scd(this, _("Choose Account to Reconcile"), _("Accounts"), accounts);
+    if (scd.ShowModal() == wxID_OK)
+    {
+        Model_Account::Data* account = Model_Account::instance().get(scd.GetStringSelection());
+        reconcileWizard wizard(account, this);
+        if (wizard.RunIt()) createHomePage();
     }
 }
 //----------------------------------------------------------------------------

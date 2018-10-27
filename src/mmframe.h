@@ -193,6 +193,7 @@ private:
     void OnNewAccount(wxCommandEvent& event);
     void OnAccountList(wxCommandEvent& event);
     void OnEditAccount(wxCommandEvent& event);
+    void OnReconcileAccount(wxCommandEvent& event);
     void OnDeleteAccount(wxCommandEvent& event);
     void OnReallocateAccount(wxCommandEvent& event);
 
@@ -223,6 +224,7 @@ private:
     void OnSelChanged(wxTreeEvent& event);
     void OnPopupDeleteAccount(wxCommandEvent& event);
     void OnPopupEditAccount(wxCommandEvent& event);
+    void OnPopupReconcileAccount(wxCommandEvent& event);
     void OnPopupReallocateAccount(wxCommandEvent& event);
     void OnPopupAccountBaseBalance(wxCommandEvent& event);
 
@@ -303,6 +305,7 @@ private:
         MENU_IMPORT_MMNETCSV,
         MENU_IMPORT_QIF,
         MENU_ACCTEDIT,
+        MENU_ACCTRECON,
         MENU_ACCTDELETE,
         MENU_TRANSACTIONREPORT,
         MENU_VIEW_TOOLBAR,
@@ -324,6 +327,7 @@ private:
         MENU_TREEPOPUP_ACCOUNTATTACHMENTS,
         MENU_TREEPOPUP_NEW,
         MENU_TREEPOPUP_EDIT,
+        MENU_TREEPOPUP_RECON,
         MENU_TREEPOPUP_MOVE,
         MENU_TREEPOPUP_DELETE,
         MENU_TREEPOPUP_REALLOCATE,
@@ -333,6 +337,7 @@ private:
         MENU_TREEPOPUP_ACCOUNT_NEW,
         MENU_TREEPOPUP_ACCOUNT_DELETE,
         MENU_TREEPOPUP_ACCOUNT_EDIT,
+        MENU_TREEPOPUP_ACCOUNT_RECON,
         MENU_TREEPOPUP_ACCOUNT_LIST,
         MENU_TREEPOPUP_ACCOUNT_EXPORT2CSV,
         MENU_TREEPOPUP_ACCOUNT_EXPORT2XML,
