@@ -18,6 +18,8 @@
 
 #include "wizard_reconcile.h"
 #include "mmSimpleDialogs.h"
+#include "mmTextCtrl.h"
+#include "validators.h"
 #include <wx/frame.h>
 #include <wx/stattext.h>
 #include <wx/sizer.h>
@@ -53,14 +55,20 @@ reconcileWizard::reconcileWizard(Model_Account::Data* account, wxFrame *frame)
 
     wxStaticText *instruction = new wxStaticText(select_dates, wxID_ANY,
         _("Click on Finish to open our download webpage."));
-    m_fromDateCtrl = new wxDatePickerCtrl(select_dates, wxID_FIRST, wxDefaultDateTime
+    fromDateCtrl = new wxDatePickerCtrl(select_dates, wxID_FIRST, wxDefaultDateTime
         , wxDefaultPosition, wxDefaultSize, wxDP_DROPDOWN);
-    m_toDateCtrl = new wxDatePickerCtrl(select_dates, wxID_LAST, wxDefaultDateTime
+    initialAmount = new mmTextCtrl(select_dates, wxID_ANY
+        , "", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER, mmCalcValidator());
+    toDateCtrl = new wxDatePickerCtrl(select_dates, wxID_LAST, wxDefaultDateTime
         , wxDefaultPosition, wxDefaultSize, wxDP_DROPDOWN);
+    finalAmount = new mmTextCtrl(select_dates, wxID_ANY
+        , "", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER, mmCalcValidator());
 
     dates_sizer->Add(instruction);
-    dates_sizer->Add(m_fromDateCtrl);
-    dates_sizer->Add(m_toDateCtrl);
+    dates_sizer->Add(fromDateCtrl);
+    dates_sizer->Add(initialAmount);
+    dates_sizer->Add(toDateCtrl);
+    dates_sizer->Add(finalAmount);
 
     date_problems = new wxWizardPageSimple(this);
     wxString datesMsg;
@@ -88,9 +96,9 @@ bool reconcileWizard::RunIt()
 void reconcileWizard::OneforePageChanged(wxWizardEvent& event)
 {
   if (event.GetPage() == select_dates && event.GetDirection() &&
-      m_fromDateCtrl->GetValue() >= m_toDateCtrl->GetValue())
+      fromDateCtrl->GetValue() >= toDateCtrl->GetValue())
     {
-      mmErrorDialogs::ToolTip4Object(m_fromDateCtrl, "please select earlier date", "invalid date", wxICON_ERROR);
+      mmErrorDialogs::ToolTip4Object(fromDateCtrl, "please select earlier date", "invalid date", wxICON_ERROR);
       event.Veto();
     }
 }

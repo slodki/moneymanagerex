@@ -21,6 +21,7 @@
 #include <wx/wizard.h>
 class wxFrame;
 class wxDatePickerCtrl;
+class mmTextCtrl;
 
 class reconcileWizard : public wxWizard
 {
@@ -31,7 +32,8 @@ public:
 private:
     Model_Account::Data* m_account;
     wxWizardPageSimple *intro, *select_dates, *date_problems;
-    wxDatePickerCtrl *m_fromDateCtrl, *m_toDateCtrl;
+    wxDatePickerCtrl *fromDateCtrl, *toDateCtrl;
+    mmTextCtrl *initialAmount, *finalAmount;
     void OneforePageChanged(wxWizardEvent& event);
 
     wxDECLARE_EVENT_TABLE();
