@@ -21,8 +21,10 @@ matrix:
   - configuration: Debug
 
 environment:
+  VCPKG_ROOT: C:\tools\vcpkg
   # use cache with 7z compression
   APPVEYOR_CACHE_ENTRY_ZIP_ARGS: -t7z -m0=lzma -mx=9
+  APPVEYOR_SAVE_CACHE_ON_ERROR: true
   # Use cygwin embedded gettext tools and Python 3.7
   path: 'C:\Python37-x64;C:\Python37-x64\Scripts;%path%;C:\cygwin64\bin'
   # clcache config
@@ -65,13 +67,13 @@ init:
     for %%c in (%%a%%b) do set "clver=%%c"
   )
 - echo %clver% > ..\MSVC_ver.txt
-# Set wxWidgets library paths
-- if %platform:~-2%==64 set wxSuff=_x64
-- set "wxcomp=%comp%"
-- if %comp:~0,2%==14 (if %wxVer%==3.1.3 set wxcomp=14x)
-- set "wxLibFolder=%wxwin%\lib\vc%wxcomp%%xp%%wxSuff%"
-- if %wxShared%==0 (set wxLibFolder=%wxLibFolder%_lib)
-  else (set wxLibFolder=%wxLibFolder%_dll)
+# # Set wxWidgets library paths
+# - if %platform:~-2%==64 set wxSuff=_x64
+# - set "wxcomp=%comp%"
+# - if %comp:~0,2%==14 (if %wxVer%==3.1.3 set wxcomp=14x)
+# - set "wxLibFolder=%wxwin%\lib\vc%wxcomp%%xp%%wxSuff%"
+# - if %wxShared%==0 (set wxLibFolder=%wxLibFolder%_lib)
+#   else (set wxLibFolder=%wxLibFolder%_dll)
 # Set curl library paths
 - set "curlLibFolder=%curldir%\vc%comp%%xp%%wxSuff%_%configuration%"
 - if %curlShared%==OFF (set curlLibFolder=%curlLibFolder%_lib)
@@ -92,6 +94,7 @@ cache:
 - '%wxwin%\lib -> ..\MSVC_ver.txt'
 - '%curlLibFolder% -> .appveyor.yml'
 - '%CLCACHE_DIR% -> ..\MSVC_ver.txt'
+- '%VCPKG_ROOT%\installed'
 
 install:
 # setup clcache
@@ -99,27 +102,40 @@ install:
 - copy clcache\clcache-%clcVer%\clcache.exe clcache\clcache-%clcVer%\cl.exe
 - if exist %APPVEYOR_BUILD_FOLDER%\clcache\clcache-%clcVer%\cl.exe set "PATH=%APPVEYOR_BUILD_FOLDER%\clcache\clcache-%clcVer%;%PATH%"
 - clcache -s
-# wxWidgets, try to download pre-compiled version first
-- if %wxShared%==1 (
-    curl -fsL --fail-early
-      -O %wxURL%/wxMSW-%wxVer%_vc%wxcomp%%xp%%wxSuff%_Dev.7z
-      -O %wxURL%/wxWidgets-%wxVer%-headers.7z &&
-    if %configuration%==Release
-      curl -fsL -O %wxURL%/wxMSW-%wxVer%_vc%wxcomp%%xp%%wxSuff%_ReleaseDLL.7z
-  ) || exit 0
-- if not exist wxMSW-%wxVer%_vc%wxcomp%%xp%%wxSuff%_Dev.7z
-    curl -fsSL -O %wxURL%/wxWidgets-%wxVer%.7z
-- 7z x -y "-o%wxwin%" wx*-%wxVer%*.7z
-# wxWidgets, build script from build/tools/msvs/officialbuild.bat
-- if %configuration%==Release set "wxConf=BUILD=release"
-- if not %platform:~-2%==64 set "wxFlags=CPPFLAGS=/arch:SSE CFLAGS=/arch:SSE"
-- if not exist "%wxLibFolder%" (
-    echo Building wxWidgets %wxVer% &
-    cd %wxwin%\build\msw &&
-    nmake /nologo /s /f makefile.vc %wxConf% COMPILER_VERSION=%comp%%xp%
-      TARGET_CPU=%platform% DEBUG_INFO=default SHARED=%wxShared% VENDOR=mmex %wxFlags%
-      wxUSE_UNSAFE_WXSTRING_CONV=0
-  )
+# # wxWidgets, try to download pre-compiled version first
+# - if %wxShared%==1 (
+#     curl -fsL --fail-early
+#       -O %wxURL%/wxMSW-%wxVer%_vc%wxcomp%%xp%%wxSuff%_Dev.7z
+#       -O %wxURL%/wxWidgets-%wxVer%-headers.7z &&
+#     if %configuration%==Release
+#       curl -fsL -O %wxURL%/wxMSW-%wxVer%_vc%wxcomp%%xp%%wxSuff%_ReleaseDLL.7z
+#   ) || exit 0
+# - if not exist wxMSW-%wxVer%_vc%wxcomp%%xp%%wxSuff%_Dev.7z
+#     curl -fsSL -O %wxURL%/wxWidgets-%wxVer%.7z
+# - 7z x -y "-o%wxwin%" wx*-%wxVer%*.7z
+# # wxWidgets, build script from build/tools/msvs/officialbuild.bat
+# - if %configuration%==Release set "wxConf=BUILD=release"
+# - if not %platform:~-2%==64 set "wxFlags=CPPFLAGS=/arch:SSE CFLAGS=/arch:SSE"
+# - if not exist "%wxLibFolder%" (
+#     echo Building wxWidgets %wxVer% &
+#     cd %wxwin%\build\msw &&
+#     nmake /nologo /s /f makefile.vc %wxConf% COMPILER_VERSION=%comp%%xp%
+#       TARGET_CPU=%platform% DEBUG_INFO=default SHARED=%wxShared% VENDOR=mmex %wxFlags%
+#       wxUSE_UNSAFE_WXSTRING_CONV=0
+#   )
+- if %platform:~-2%==64 (set triplet=x64) else (set triplet=x86)
+# - ps: $env:VCPKG_DEFAULT_TRIPLET="$env:triplet-windows-v$env:comp$env:xp-mmex-static-$env:configuration".ToLower()
+- set VCPKG_DEFAULT_TRIPLET=%triplet%-windows-v%comp%%xp%-mmex-static
+- echo set(VCPKG_TARGET_ARCHITECTURE %triplet%) >> %VCPKG_ROOT%\triplets\%VCPKG_DEFAULT_TRIPLET%.cmake
+- echo set(VCPKG_CRT_LINKAGE static) >> %VCPKG_ROOT%\triplets\%VCPKG_DEFAULT_TRIPLET%.cmake
+- echo set(VCPKG_LIBRARY_LINKAGE static) >> %VCPKG_ROOT%\triplets\%VCPKG_DEFAULT_TRIPLET%.cmake
+- echo set(VCPKG_PLATFORM_TOOLSET v%comp%%xp%) >> %VCPKG_ROOT%\triplets\%VCPKG_DEFAULT_TRIPLET%.cmake
+# - echo string(TOLOWER %configuration% VCPKG_BUILD_TYPE) >> %VCPKG_ROOT%\triplets\%VCPKG_DEFAULT_TRIPLET%.cmake
+- echo set(CURL_USE_WINSSL ON) >> %VCPKG_ROOT%\triplets\%VCPKG_DEFAULT_TRIPLET%.cmake
+- vcpkg install wxwidgets
+- vcpkg list
+- dir /s %VCPKG_ROOT%\installed\%VCPKG_DEFAULT_TRIPLET%
+# - type %VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake
 # libcurl
 - if %configuration%==Debug (set "curlConf=-DENABLE_DEBUG=ON")
 - if not exist "%curlLibFolder%" (
@@ -163,7 +179,7 @@ build_script:
 - mkdir build & cd build
 - if %configuration%==Debug
     set "cmake_def=-DCMAKE_INSTALL_DEBUG_LIBRARIES=ON -DCMAKE_INSTALL_DEBUG_LIBRARIES_ONLY=ON"
-- set "cmake_def=%cmake_def% -DCMAKE_PREFIX_PATH=%curlLibFolder%"
+- set "cmake_def=%cmake_def% -DCMAKE_PREFIX_PATH=%curlLibFolder% -DCMAKE_PREFIX_PATH=%VCPKG_ROOT%\installed\%VCPKG_DEFAULT_TRIPLET% -DVCPKG_TARGET_TRIPLET=%VCPKG_DEFAULT_TRIPLET%"
 - cmake --graphviz=mmex.dot -T v%comp%%xp%,host=x64 -G "Visual Studio %gen%" %cmake_def% ..
 - cmake --build . --target package --config %configuration%
     -- /maxcpucount /verbosity:minimal /nologo /p:PreferredToolArchitecture=x64

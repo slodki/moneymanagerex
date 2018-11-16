@@ -163,12 +163,12 @@ If wxWidgets is required (i.e., not an optional part):
 # Helper macro to control the debugging output globally. There are
 # two versions for controlling how verbose your output should be.
 macro(DBG_MSG _MSG)
-#  message(STATUS
-#    "${CMAKE_CURRENT_LIST_FILE}(${CMAKE_CURRENT_LIST_LINE}): ${_MSG}")
+ message(STATUS
+   "${CMAKE_CURRENT_LIST_FILE}(${CMAKE_CURRENT_LIST_LINE}): ${_MSG}")
 endmacro()
 macro(DBG_MSG_V _MSG)
-#  message(STATUS
-#    "${CMAKE_CURRENT_LIST_FILE}(${CMAKE_CURRENT_LIST_LINE}): ${_MSG}")
+ message(STATUS
+   "${CMAKE_CURRENT_LIST_FILE}(${CMAKE_CURRENT_LIST_LINE}): ${_MSG}")
 endmacro()
 
 # Clear return values in case the module is loaded more than once.
@@ -533,6 +533,7 @@ if(wxWidgets_FIND_STYLE STREQUAL "win32")
         ${WX_ROOT_DIR}/lib/${_WX_TOOL}${_WX_TOOLVERx}_xp${_WX_ARCH}_lib
         ${WX_ROOT_DIR}/lib/${_WX_TOOL}${_WX_TOOLVERx}${_WX_ARCH}_lib
         ${WX_ROOT_DIR}/lib/${_WX_TOOL}${_WX_ARCH}_lib
+        ${WX_ROOT_DIR}/lib # for vcpkg
         DOC "Path to wxWidgets libraries"
         NO_DEFAULT_PATH
         )
@@ -558,6 +559,7 @@ if(wxWidgets_FIND_STYLE STREQUAL "win32")
         ${WX_ROOT_DIR}/lib/${_WX_TOOL}${_WX_TOOLVERx}_xp${_WX_ARCH}_dll
         ${WX_ROOT_DIR}/lib/${_WX_TOOL}${_WX_TOOLVERx}${_WX_ARCH}_dll
         ${WX_ROOT_DIR}/lib/${_WX_TOOL}${_WX_ARCH}_dll
+        ${WX_ROOT_DIR}/lib # for vcpkg
         DOC "Path to wxWidgets libraries"
         NO_DEFAULT_PATH
         )
