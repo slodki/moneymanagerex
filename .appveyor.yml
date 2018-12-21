@@ -124,7 +124,12 @@ install:
     cd %wxwin%\build\msw &&
     nmake /nologo /s /f makefile.vc %wxConf% COMPILER_VERSION=%comp%%xp%
       TARGET_CPU=%platform% DEBUG_INFO=default SHARED=%wxShared% VENDOR=mmex %wxFlags%
-      wxUSE_UNSAFE_WXSTRING_CONV=0
+      wxUSE_UNSAFE_WXSTRING_CONV=0 &&
+    cd ..\..\utils\wxrc &&
+    nmake /nologo /s /f makefile.vc %wxConf% COMPILER_VERSION=%comp%%xp%
+      TARGET_CPU=%platform% DEBUG_INFO=default SHARED=%wxShared% VENDOR=mmex %wxFlags%
+      wxUSE_UNSAFE_WXSTRING_CONV=0 &&
+    copy vc%comp%%xp%_mswu%wxLibFolder:~-3%%wxSuff%\wxrc.exe %wxLibFolder%
   )
 # libcurl
 - if %configuration%==Debug (set "curlConf=-DENABLE_DEBUG=ON")
