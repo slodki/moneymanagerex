@@ -20,4 +20,5 @@ RUN yum -y --enablerepo=extras install epel-release \
 RUN for f in cmake make pack test; do \
       ln -sv /usr/bin/c${f}3 /usr/bin/c${f}; done
 
+ENV WXRC_CMD wxrc-3.0
 ENV MMEX_INST_CMD yum -y install ./mmex-*.rpm

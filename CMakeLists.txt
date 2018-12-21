@@ -240,8 +240,11 @@ IF(CMAKE_VERSION VERSION_LESS 3.14)
 ENDIF()
 SET(wxWidgets_USE_REL_AND_DBG ON)
 FIND_PACKAGE(wxWidgets 2.9.2 REQUIRED
-    COMPONENTS core qa html xml aui adv stc webview base
+    COMPONENTS core qa html xml aui adv stc webview base xrc
     OPTIONAL_COMPONENTS scintilla)
+IF(NOT wxWidgets_wxrc_EXECUTABLE)
+    MESSAGE(SEND_ERROR "wxWidgets wxrc tool not found.")
+ENDIF()
 IF(APPLE AND wxWidgets_LIBRARIES MATCHES "${CMAKE_STATIC_LIBRARY_PREFIX}wx_baseu-[0-9\\.]+${CMAKE_STATIC_LIBRARY_SUFFIX}")
     # use static libs in place of dynamic if using static wxMac
     FOREACH(deplib png jpeg)

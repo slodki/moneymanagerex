@@ -1011,6 +1011,7 @@ find_package_handle_standard_args(wxWidgets
 # Resource file compiler.
 find_program(wxWidgets_wxrc_EXECUTABLE
   NAMES $ENV{WXRC_CMD} wxrc
+  HINTS ${WX_LIB_DIR}
   PATHS ${wxWidgets_ROOT_DIR}/utils/wxrc/vc_msw
   DOC "Location of wxWidgets resource file compiler binary (wxrc)"
   )
