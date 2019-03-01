@@ -132,7 +132,7 @@ To install downloaded package file run following command from terminal window:
 
 | Distribution         | Install package from local file              |
 |----------------------|----------------------------------------------|
-| Debian, Ubuntu, Mint | `sudo apt install ./mmex-<version>.deb`      |
+| Debian, Ubuntu, Mint | `sudo apt install ./mmex*.deb`               |
 | openSUSE             | `sudo zypper install ./mmex-<version>.rpm`   |
 | Fedora               | `sudo dnf install ./mmex-<version>.rpm`      |
 | CentOS               | `sudo yum install ./mmex-<version>.rpm`      |

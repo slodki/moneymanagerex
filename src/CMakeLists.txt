@@ -350,4 +350,6 @@ endif()
 
 install(TARGETS ${MMEX_EXE}
     RUNTIME DESTINATION ${MMEX_BIN_DIR}
-    BUNDLE  DESTINATION .)
+    COMPONENT executable
+    BUNDLE  DESTINATION .
+    COMPONENT executable)

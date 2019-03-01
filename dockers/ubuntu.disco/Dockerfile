@@ -15,4 +15,4 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       rapidjson-dev \
  && rm -rf /var/lib/apt/lists/*
 
-ENV MMEX_INST_CMD apt-get update && apt install -yqV ./mmex_*.deb
+ENV MMEX_INST_CMD apt-get update && apt install -yqV ./mmex*.deb

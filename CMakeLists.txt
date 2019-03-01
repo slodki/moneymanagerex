@@ -402,7 +402,8 @@ if(WIN32)
         file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/mmexini.db3" "")
         install(FILES
             "${CMAKE_CURRENT_BINARY_DIR}/mmexini.db3"
-            DESTINATION "${MMEX_DOC_DIR}")
+            DESTINATION "${MMEX_DOC_DIR}"
+            COMPONENT common)
     endif()
 
     # add shared wxWidgets DLLs
@@ -473,6 +474,7 @@ if(WIN32)
     # set(CMAKE_INSTALL_DEBUG_LIBRARIES ON)
     # set(CMAKE_INSTALL_DEBUG_LIBRARIES_ONLY ON)
 
+    set(CMAKE_INSTALL_SYSTEM_RUNTIME_COMPONENT libs)
     include(InstallRequiredSystemLibraries)
 endif()
 
@@ -482,10 +484,15 @@ install(FILES
     license.txt
     version.txt
     README.TXT
-    DESTINATION "${MMEX_DOC_DIR}")
+    DESTINATION "${MMEX_DOC_DIR}"
+    COMPONENT docs)
 install(DIRECTORY
     docs/
-    DESTINATION "${MMEX_DOC_DIR}/help")
+    DESTINATION "${MMEX_DOC_DIR}/help"
+    COMPONENT manual
+    PATTERN CNAME EXCLUDE
+    PATTERN Analytics.md EXCLUDE
+    PATTERN _config.yml EXCLUDE)
 
 # Resources
 install(FILES
@@ -495,28 +502,33 @@ install(FILES
     resources/home_page.htt
     resources/kaching.wav
     resources/master.css
-    DESTINATION "${MMEX_RES_DIR}")
+    DESTINATION "${MMEX_RES_DIR}"
+    COMPONENT common)
 
 if(LINUX)
     # .desktop File
     install(FILES
         resources/mmex.desktop
-        DESTINATION share/applications)
+        DESTINATION share/applications
+        COMPONENT integration)
 endif()
 
 # Icons
 if(LINUX)
     install(FILES
         resources/mmex.svg
-        DESTINATION share/icons/hicolor/scalable/apps)
+        DESTINATION share/icons/hicolor/scalable/apps
+        COMPONENT integration)
 elseif(APPLE)
     install(FILES
         "${MACOSX_APP_ICON_FILE}"
-        DESTINATION "${MMEX_RES_DIR}")
+        DESTINATION "${MMEX_RES_DIR}"
+        COMPONENT integration)
 elseif(WIN32)
     install(FILES
         resources/mmex.ico
-        DESTINATION "${MMEX_RES_DIR}")
+        DESTINATION "${MMEX_RES_DIR}"
+        COMPONENT integration)
 endif()
 
 
@@ -527,25 +539,39 @@ set(CPACK_PACKAGE_VERSION_MAJOR ${MMEX_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${MMEX_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${MMEX_VERSION_PATCH})
 set(CPACK_PACKAGE_CONTACT "MoneyManagerEx Developers <developers@moneymanagerex.org>")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Simple to use financial management software")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "simple to use financial management software")
 set(CPACK_PACKAGE_DESCRIPTION "Money Manager Ex (MMEX) is a free, open-source, cross-platform, easy-to-use personal finance software. It primarily helps organize one's finances and keeps track of where, when and how the money goes. MMEX includes all the basic features that 90% of users would want to see in a personal finance application. The design goals are to concentrate on simplicity and user friendliness - something one can use everyday.")
 set(CPACK_PACKAGE_ICON "${PROJECT_SOURCE_DIR}/resources/mmex.ico")
 set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/license.txt")
 set(CPACK_RESOURCE_FILE_README "${PROJECT_SOURCE_DIR}/README.TXT")
 # TODO: do we package Debug builds with stripped binaries?
 set(CPACK_STRIP_FILES ON)
-set(CPACK_DEBIAN_PACKAGE_SECTION misc)
-set(CPACK_DEBIAN_PACKAGE_PRIORITY extra)
-set(CPACK_DEBIAN_PACKAGE_HOMEPAGE http://www.moneymanagerex.org/)
-set(CPACK_DEBIAN_PACKAGE_REPLACES moneymanagerex)
-set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
-set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
-set(CPACK_DEBIAN_PACKAGE_DEPENDS wx${wxWidgets_VERSION_MAJOR}.${wxWidgets_VERSION_MINOR}-i18n)
-set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
+set(CPACK_PROJECT_CONFIG_FILE "${PROJECT_SOURCE_DIR}/util/CPackOptions.cmake")
+
+set(CPACK_COMPONENT_EXECUTABLE_DISPLAY_NAME "MMEX application")
+set(CPACK_COMPONENT_EXECUTABLE_DESCRIPTION "Executable binary required to run MMEX application")
+set(CPACK_COMPONENT_EXECUTABLE_REQUIRED TRUE)
+set(CPACK_COMPONENT_EXECUTABLE_DEPENDS common manual)
+set(CPACK_COMPONENT_LIBS_DISPLAY_NAME "Run-time DLLs")
+set(CPACK_COMPONENT_LIBS_DESCRIPTION "Windows libraries required to run MMEX on all Windows versions")
+set(CPACK_COMPONENT_COMMON_DISPLAY_NAME "Resource files")
+set(CPACK_COMPONENT_COMMON_DESCRIPTION "Arch-independed resources required to run MMEX application")
+set(CPACK_COMPONENT_COMMON_DEPENDS docs)
+set(CPACK_COMPONENT_MANUAL_DISPLAY_NAME "User manual")
+set(CPACK_COMPONENT_MANUAL_DESCRIPTION "HTML version of MMEX user manual")
+set(CPACK_COMPONENT_DOCS_DISPLAY_NAME "Documentation")
+set(CPACK_COMPONENT_DOCS_DESCRIPTION "Additional documentation files")
+set(CPACK_COMPONENT_INTEGRATION_DISPLAY_NAME "System desktop integration")
+set(CPACK_COMPONENT_INTEGRATION_DESCRIPTION "Integrates MMEX with system desktop environment (icons, menus)")
+set(CPACK_COMPONENT_INTEGRATION_DEPENDS executable)
+set(CPACK_COMPONENT_TRANSLATIONS_DISPLAY_NAME "Translations")
+set(CPACK_COMPONENT_TRANSLATIONS_DESCRIPTION "Localization files for MMEX GUI")
+set(CPACK_COMPONENT_TRANSLATIONS_DEPENDS executable)
+
 set(CPACK_RPM_FILE_NAME RPM-DEFAULT)
 set(CPACK_RPM_PACKAGE_LICENSE GPL-2+)
-set(CPACK_RPM_PACKAGE_URL ${CPACK_DEBIAN_PACKAGE_HOMEPAGE})
-set(CPACK_RPM_PACKAGE_OBSOLETES ${CPACK_DEBIAN_PACKAGE_REPLACES})
+set(CPACK_RPM_PACKAGE_URL https://www.moneymanagerex.org/)
+set(CPACK_RPM_PACKAGE_OBSOLETES moneymanagerex)
 set(CPACK_RPM_PACKAGE_AUTOREQ ON)
 set(CPACK_RPM_PACKAGE_DESCRIPTION ${CPACK_PACKAGE_DESCRIPTION})
 set(CPACK_RPM_PACKAGE_RELEASE_DIST ON)
@@ -562,7 +588,38 @@ set(CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION
 if(LINUX)
     if(LINUX_DISTRO STREQUAL "Ubuntu" OR LINUX_DISTRO STREQUAL "Debian" OR LINUX_DISTRO STREQUAL "LinuxMint" OR LINUX_DISTRO STREQUAL "Raspbian")
         set(CPACK_GENERATOR DEB)
-        set(CPACK_DEBIAN_PACKAGE_RELEASE "${CPACK_DEBIAN_PACKAGE_RELEASE}~${LINUX_DISTRO_CODENAME}")
+        if(NOT CMAKE_VERSION VERSION_LESS 3.6)
+            # there is no CPACK_DEBIAN_<COMPONENT>_FILE_NAME in CMake 3.5
+            set(CPACK_DEB_COMPONENT_INSTALL ON)
+        endif()
+        if(NOT CPACK_DEBIAN_PACKAGE_ARCHITECTURE)
+            execute_process(COMMAND dpkg --print-architecture
+                OUTPUT_VARIABLE CPACK_DEBIAN_PACKAGE_ARCHITECTURE
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
+            if(NOT CPACK_DEBIAN_PACKAGE_ARCHITECTURE)
+                message(FATAL_ERROR "Can not detect Debian architecture using dpkg.")
+            endif()
+        endif()
+        set(CPACK_DEBIAN_PACKAGE_SECTION misc)
+        set(CPACK_DEBIAN_PACKAGE_PRIORITY extra)
+        set(CPACK_DEBIAN_PACKAGE_HOMEPAGE https://www.moneymanagerex.org/)
+        set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+        set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
+        set(CPACK_DEBIAN_ENABLE_COMPONENT_DEPENDS ON)
+        set(CPACK_DEBIAN_EXE_PACKAGE_REPLACES moneymanagerex)
+        set(CPACK_DEBIAN_EXE_PACKAGE_RECOMMENDS ${CPACK_PACKAGE_NAME}-l10n)
+        set(CPACK_DEBIAN_EXE_PACKAGE_NAME ${CPACK_PACKAGE_NAME})
+        set(CPACK_DEBIAN_EXE_FILE_NAME "${CPACK_PACKAGE_NAME}_${CPACK_PACKAGE_VERSION}-${CPACK_DEBIAN_PACKAGE_RELEASE}~${LINUX_DISTRO_CODENAME}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}.deb")
+        set(CPACK_DEBIAN_L10N_PACKAGE_ARCHITECTURE all)
+        set(CPACK_DEBIAN_L10N_PACKAGE_DEPENDS wx${wxWidgets_VERSION_MAJOR}.${wxWidgets_VERSION_MINOR}-i18n)
+        set(CPACK_DEBIAN_DATA_PACKAGE_ARCHITECTURE all)
+        if(CPACK_DEB_COMPONENT_INSTALL)
+            set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
+        else()
+            set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}_${CPACK_PACKAGE_VERSION}-${CPACK_DEBIAN_PACKAGE_RELEASE}~${LINUX_DISTRO_CODENAME}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}")
+            set(CPACK_DEBIAN_PACKAGE_REPLACES moneymanagerex)
+            set(CPACK_DEBIAN_PACKAGE_DEPENDS wx${wxWidgets_VERSION_MAJOR}.${wxWidgets_VERSION_MINOR}-i18n)
+        endif()
     elseif(LINUX_DISTRO STREQUAL "Fedora")
         set(CPACK_GENERATOR RPM)
         set(CPACK_RPM_PACKAGE_RELEASE_DIST ".fc${LINUX_DISTRO_REL}")
@@ -583,9 +640,11 @@ if(LINUX)
             set(CPACK_SYSTEM_NAME i586)
         endif()
         install(FILES util/slackware-desc
-                DESTINATION /install RENAME slack-desc)
+                DESTINATION /install RENAME slack-desc
+                COMPONENT integration)
         install(PROGRAMS util/slackware-doinst.sh
-                DESTINATION /install RENAME doinst.sh)
+                DESTINATION /install RENAME doinst.sh
+                COMPONENT integration)
         set(CPACK_SYSTEM_NAME ${CPACK_SYSTEM_NAME}-1_slack${LINUX_DISTRO_REL})
         set(CPACK_SET_DESTDIR ON)
         set(CPACK_PACKAGING_INSTALL_PREFIX /usr) # not working?
@@ -612,10 +671,14 @@ elseif(WIN32)
     set(CPACK_NSIS_MUI_UNIICON "${CPACK_PACKAGE_ICON}")
     set(CPACK_NSIS_INSTALLED_ICON_NAME "${MMEX_BIN_DIR}\\\\${MMEX_EXE}${CMAKE_EXECUTABLE_SUFFIX}")
     set(CPACK_NSIS_MUI_FINISHPAGE_RUN ${MMEX_EXE}${CMAKE_EXECUTABLE_SUFFIX})
-    set(CPACK_NSIS_URL_INFO_ABOUT ${CPACK_DEBIAN_PACKAGE_HOMEPAGE})
+    set(CPACK_NSIS_URL_INFO_ABOUT https://www.moneymanagerex.org/features/overview)
+    set(CPACK_NSIS_HELP_LINK https://www.moneymanagerex.org/)
     set(CPACK_NSIS_CONTACT "${CPACK_PACKAGE_CONTACT}")
     set(CPACK_NSIS_CREATE_ICONS_EXTRA
             "CreateShortCut '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Money Manager EX.lnk' '$INSTDIR\\\\${MMEX_BIN_DIR}\\\\${MMEX_EXE}${CMAKE_EXECUTABLE_SUFFIX}'")
+    set(CPACK_NSIS_MENU_LINKS
+        "help/index.html" "MMEX User Manual"
+        "https://www.moneymanagerex.org/" "MMEX Web Site")
     set(CPACK_NSIS_DELETE_ICONS_EXTRA "Delete '$SMPROGRAMS\\\\$START_MENU\\\\Money Manager EX.lnk'")
     set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
 endif()
@@ -643,19 +706,7 @@ if(LINUX_DISTRO STREQUAL "Arch")
 else()
     # workarount for old CMake without DEB-DEFAULT/RPM-DEFAULT support
     if(CMAKE_VERSION VERSION_LESS 3.6)
-        if(CPACK_GENERATOR STREQUAL "DEB")
-            if(NOT CPACK_DEBIAN_PACKAGE_ARCHITECTURE)
-                find_program(DPKG_CMD dpkg DOC "Debian packaging tool")
-                if(NOT DPKG_CMD)
-                    message("CPackDeb: Can not find dpkg in your path, default architecture to i386.")
-                    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE i386)
-                endif()
-                execute_process(COMMAND "${DPKG_CMD}" --print-architecture
-                    OUTPUT_VARIABLE CPACK_DEBIAN_PACKAGE_ARCHITECTURE
-                    OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
-            endif()
-            set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}_${CPACK_PACKAGE_VERSION}-${CPACK_DEBIAN_PACKAGE_RELEASE}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}")
-        elseif(CPACK_GENERATOR STREQUAL "RPM")
+        if(CPACK_GENERATOR MATCHES "RPM")
             if(NOT CPACK_RPM_PACKAGE_ARCHITECTURE)
                 execute_process(COMMAND uname -m
                     OUTPUT_VARIABLE CPACK_RPM_PACKAGE_ARCHITECTURE
@@ -667,7 +718,6 @@ else()
 
     include(CPack)
 endif()
-
 
 # --------- Print summary after configuration stage ---------
 message(STATUS "")

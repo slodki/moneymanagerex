@@ -41,7 +41,8 @@ foreach(POFile ${POFiles})
     endif()
     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${CurrentFile}.mo"
         DESTINATION ${MODir}
-        RENAME ${MMEX_EXE}.mo)
+        RENAME ${MMEX_EXE}.mo
+        COMPONENT translations)
 
     list(APPEND MOFiles "${CMAKE_CURRENT_BINARY_DIR}/${CurrentFile}.mo")
 endforeach()

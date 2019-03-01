@@ -15,4 +15,4 @@ RUN dpkg --add-architecture i386 && apt-get update \
       rapidjson-dev \
  && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ENV MMEX_INST_CMD apt-get update && apt install -yqV ./mmex_*.deb
+ENV MMEX_INST_CMD apt-get update && apt install -yqV ./mmex*.deb
