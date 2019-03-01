@@ -20,4 +20,4 @@ RUN echo deb http://ftp.debian.org/debian stretch-backports main \
       libwxgtk-webview3.0-dev:i386 \
  && rm -rf /var/lib/apt/lists/*
 
-ENV MMEX_INST_CMD apt-get update && apt install -t stretch-backports -yqV ./mmex_*.deb
+ENV MMEX_INST_CMD apt-get update && apt install -t stretch-backports -yqV ./mmex*.deb

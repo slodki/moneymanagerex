@@ -19,4 +19,4 @@ RUN chown _apt:root /etc/apt/trusted.gpg.d/CodeLite.asc \
       rapidjson-dev \
  && rm -rf /var/lib/apt/lists/*
 
-ENV MMEX_INST_CMD apt-get update && apt install -yqV ./mmex_*.deb
+ENV MMEX_INST_CMD apt-get update && apt install -yqV ./mmex*.deb

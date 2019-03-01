@@ -19,4 +19,4 @@ RUN echo deb http://ftp.debian.org/debian jessie-backports main \
       cmake \
  && rm -rf /var/lib/apt/lists/*
 
-ENV MMEX_INST_CMD apt-get update && ( dpkg -i ./mmex_*.deb || apt-get install -y -f )
+ENV MMEX_INST_CMD apt-get update && ( dpkg -i ./mmex*.deb || apt-get install -y -f )
