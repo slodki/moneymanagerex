@@ -21,4 +21,4 @@ RUN echo deb http://archive.debian.org/debian jessie-backports main \
       cmake \
  && rm -rf /var/lib/apt/lists/*
 
-ENV MMEX_INST_CMD apt-get update && ( dpkg -i ./mmex_*.deb || apt-get install -t jessie-backports -y -f ) && which mmex
+ENV MMEX_INST_CMD dpkg --add-architecture i386 && apt-get update && ( dpkg -i ./mmex_*.deb || apt-get install -y -f ) && which mmex
