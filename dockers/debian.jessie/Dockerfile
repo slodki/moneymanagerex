@@ -6,6 +6,7 @@ RUN echo deb http://archive.debian.org/debian jessie-backports main \
       > /etc/apt/apt.conf.d/99backports \
  && apt-get update && apt-get install -y --no-install-recommends \
       build-essential \
+      ca-certificates \
       ccache \
       file \
       gettext \

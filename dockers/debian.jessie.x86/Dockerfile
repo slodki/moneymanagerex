@@ -7,6 +7,7 @@ RUN echo deb http://archive.debian.org/debian jessie-backports main \
  && dpkg --add-architecture i386 && apt-get update \
  && apt-get install -y --no-install-recommends \
       build-essential \
+      ca-certificates \
       ccache \
       file \
       g++-multilib \

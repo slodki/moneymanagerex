@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.1...3.14 FATAL_ERROR)
 
 find_package(Git REQUIRED)
 # Get the latest version tag
@@ -232,7 +232,7 @@ endif()
 
 
 # --------- wxWidgets dependency ---------
-if(CMAKE_VERSION VERSION_LESS 3.14)
+if(CMAKE_VERSION VERSION_LESS 3.15)
     # FindwxWidgets.cmake module will be fixed in CMake 3.14.0
     list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/util")
 endif()
@@ -702,7 +702,9 @@ if(MSVC)
     if(CMAKE_VS_PLATFORM_NAME)
         message(STATUS "Platform       : ${CMAKE_VS_PLATFORM_NAME}")
     endif()
-    message(STATUS "VC install dir : $ENV{VCINSTALLDIR}")
+    if(ENV{VCINSTALLDIR})
+        message(STATUS "VC install dir : $ENV{VCINSTALLDIR}")
+    endif()
     if(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS)
         foreach(m_dll ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS})
             get_filename_component(m_dll ${m_dll} NAME_WE)

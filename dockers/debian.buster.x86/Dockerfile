@@ -3,6 +3,7 @@ LABEL maintainer="developers@moneymanagerex.org"
 RUN dpkg --add-architecture i386 && apt-get update \
  && apt-get install -y --no-install-recommends \
       build-essential \
+      ca-certificates \
       ccache \
       cmake \
       file \

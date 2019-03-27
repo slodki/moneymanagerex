@@ -4,6 +4,7 @@ RUN echo deb http://ftp.debian.org/debian stretch-backports main \
       > /etc/apt/sources.list.d/backports.list \
  && dpkg --add-architecture armhf && apt-get update \
  && apt-get install -y --no-install-recommends \
+      ca-certificates \
       cmake \
       crossbuild-essential-armhf \
       file ccache \

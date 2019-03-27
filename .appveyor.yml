@@ -123,7 +123,6 @@ install:
 - if not exist "%curlLibFolder%" (
     echo Building libcurl %curlVer% &
     git clone -q --depth=1 --branch=curl-%curlVer% https://github.com/curl/curl.git %curldir%-src &&
-    mkdir %curldir%-src\build && cd %curldir%-src\build &&
     cmake -T v%comp%%xp%,host=x64 -G "Visual Studio %gen%" %curlConf%
       -DBUILD_CURL_EXE=OFF
       -DBUILD_SHARED_LIBS=%curlShared%
@@ -142,9 +141,10 @@ install:
       -DCMAKE_USE_WINSSL=ON
       -DBUILD_TESTING=OFF
       -DCMAKE_INSTALL_PREFIX=%curlLibFolder%
-      .. &&
-    cmake --build . --target install --config %configuration%
+      -S %curldir%-src -B %curldir%-src\build &&
+    cmake --build %curldir%-src\build --target install --config %configuration%
       -- /maxcpucount /verbosity:minimal /nologo /p:PreferredToolArchitecture=x64
+         /p:TrackFileAccess=false /p:CLToolExe=clcache.exe /p:CLToolPath="%APPVEYOR_BUILD_FOLDER%\clcache\clcache-%clcVer%"
   )
 
 before_build:
@@ -155,21 +155,20 @@ before_build:
   python ..\..\util\sqlite2cpp.py ..\..\database\tables.sql &&
   python ..\..\util\sqliteupgrade2cpp.py ..\..\database\incremental_upgrade &&
   del *.mmdbg sql*.sql
-- cd %APPVEYOR_BUILD_FOLDER%
 
 build_script:
-- mkdir build & cd build
 - if %configuration%==Debug
     set "cmake_def=-DCMAKE_INSTALL_DEBUG_LIBRARIES=ON -DCMAKE_INSTALL_DEBUG_LIBRARIES_ONLY=ON"
 - set "cmake_def=%cmake_def% -DCMAKE_PREFIX_PATH=%curlLibFolder%"
-- cmake --graphviz=mmex.dot -T v%comp%%xp%,host=x64 -G "Visual Studio %gen%" %cmake_def% ..
-- cmake --build . --target package --config %configuration%
+- cmake --graphviz=mmex.dot -T v%comp%%xp%,host=x64 -G "Visual Studio %gen%" %cmake_def% -S %APPVEYOR_BUILD_FOLDER% -B %APPVEYOR_BUILD_FOLDER%\build
+- cmake --build %APPVEYOR_BUILD_FOLDER%\build --target package --config %configuration%
     -- /maxcpucount /verbosity:minimal /nologo /p:PreferredToolArchitecture=x64
 
 after_build:
 - clcache -s
 # rename and move
 - if %configuration%==Debug set "pkgsuff=-debug"
+- cd %APPVEYOR_BUILD_FOLDER%\build
 - for %%f in (*.exe *.zip) do
     if /i %%~xf==.exe (move "%%f" "..\%%~nf%xp%%pkgsuff%.exe")
     else (move "%%f" "..\%%~nf%xp%%pkgsuff%-portable.zip")

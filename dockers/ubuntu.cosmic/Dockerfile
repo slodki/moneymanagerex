@@ -2,6 +2,7 @@ FROM ubuntu:cosmic
 LABEL maintainer="developers@moneymanagerex.org"
 RUN apt-get update && apt-get install -y --no-install-recommends \
       build-essential \
+      ca-certificates \
       ccache \
       cmake \
       file \

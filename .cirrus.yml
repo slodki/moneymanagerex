@@ -1,0 +1,159 @@
+env:
+  CCACHE_SLOPPINESS: time_macros
+  CMAKE_BUILD_PARALLEL_LEVEL: 8
+  MAKEFLAGS: -j8
+
+task:
+  env:
+    # ARCH must be defined
+    ARCH: ""
+    matrix:
+    # DIST and ARCH preceded by a dot
+    - { OS: debian, DIST: .jessie }
+    - { OS: debian, DIST: .stretch }
+    - { OS: debian, DIST: .buster }
+    - { OS: debian, DIST: .jessie, ARCH: .x86 }
+    - { OS: debian, DIST: .stretch, ARCH: .x86 }
+    - { OS: debian, DIST: .stretch, ARCH: .armhf }
+    - { OS: debian, DIST: .buster, ARCH: .x86 }
+    - { OS: ubuntu, DIST: .xenial }
+    - { OS: ubuntu, DIST: .zesty }
+    - { OS: ubuntu, DIST: .artful }
+    - { OS: ubuntu, DIST: .bionic }
+    - { OS: ubuntu, DIST: .cosmic }
+    - { OS: ubuntu, DIST: .disco }
+    - { OS: ubuntu, DIST: .xenial, ARCH: .x86 }
+    - { OS: ubuntu, DIST: .zesty, ARCH: .x86 }
+    - { OS: ubuntu, DIST: .artful, ARCH: .x86 }
+    - { OS: ubuntu, DIST: .bionic, ARCH: .x86 }
+    - { OS: ubuntu, DIST: .cosmic, ARCH: .x86 }
+    - { OS: ubuntu, DIST: .disco, ARCH: .x86 }
+    - { OS: ubuntu, DIST: .disco, ARCH: .armhf }
+    - { OS: fedora, DIST: .24 }
+    - { OS: fedora, DIST: .25 }
+    - { OS: fedora, DIST: .26 }
+    - { OS: fedora, DIST: .27 }
+    - { OS: fedora, DIST: .28 }
+    - { OS: fedora, DIST: .29 }
+    - { OS: fedora, DIST: .30 }
+    - { OS: opensuse, DIST: .42.1 }
+    - { OS: opensuse, DIST: .42.2 }
+    - { OS: opensuse, DIST: .42.3 }
+    - { OS: archlinux, DIST: "" }
+    - { OS: el, DIST: .7 }
+    # - { OS: slackware, DIST: .14.2 }
+  name: $OS$DIST$ARCH
+  container:
+    # image: moneymanagerex/mmex_build_env:$OS$DIST$ARCH
+    dockerfile: dockers/$OS$DIST$ARCH/Dockerfile
+    cpu: 4
+  clone_script: |
+    CLONE_OPT="--recursive"
+    if [ -z "$CIRRUS_PR" ]; then
+      git clone $CLONE_OPT --single-branch --branch=$CIRRUS_BRANCH ${CIRRUS_REPO_CLONE_URL} $CIRRUS_WORKING_DIR
+    else
+      git clone $CLONE_OPT ${CIRRUS_REPO_CLONE_URL} $CIRRUS_WORKING_DIR
+      git fetch origin pull/$CIRRUS_PR/head:pull/$CIRRUS_PR
+    fi
+    git reset --hard $CIRRUS_CHANGE_IN_REPO
+  ccache_cache:
+    folder: ~/.ccache
+  configure_script: |
+    mkdir build && cd build
+    BUILD_TYPE=$(if [[ "$CIRRUS_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then if [[ "$CIRRUS_TAG" =~ -[a-z] ]]; then echo RelWithDebInfo; else echo Release; fi; else echo Debug; fi)
+    cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE ${ARCH:+-DCMAKE_TOOLCHAIN_FILE=util/toolchain-$CIRRUS_OS-${ARCH:1}.cmake} ..
+  build_script: |
+    if [ "$OS" == "archlinux" ]; then chmod -fR a+rwX ~/.ccache; fi
+    cmake --build build --target package
+    ccache -s
+  install_script: |
+    mv -v -t . build/*.{deb,rpm,txz,pkg.tar.xz} || true
+    eval $MMEX_INST_CMD
+  package_artifacts:
+    path: "*.{deb,rpm,txz,pkg.tar.xz}"
+
+mojave.xcode_task:
+  osx_instance:
+    image: mojave-xcode-10.2
+  env:
+    MACOSX_DEPLOYMENT_TARGET: 10.7
+    CXXFLAGS: -stdlib=libc++
+    LDFLAGS: -stdlib=libc++
+    PATH: "/usr/local/opt/ccache/libexec:$PATH"
+  clone_script: |
+    if [ -z "$CIRRUS_PR" ]; then
+      git clone --recursive --single-branch --branch=$CIRRUS_BRANCH ${CIRRUS_REPO_CLONE_URL} $CIRRUS_WORKING_DIR
+    else
+      git clone --recursive ${CIRRUS_REPO_CLONE_URL} $CIRRUS_WORKING_DIR
+      git fetch origin pull/$CIRRUS_PR/head:pull/$CIRRUS_PR
+    fi
+    git reset --hard $CIRRUS_CHANGE_IN_REPO
+  ccache_cache:
+    folder: ~/.ccache
+  prepare_script: |
+    brew update && brew bundle --verbose --file=util/Brewfile
+    ccache -s
+    cd $HOME
+    curl -fsSL -O https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.2/wxWidgets-3.1.2.tar.bz2
+    tar xzf wxWidgets-*.tar.bz2
+    cd wxWidgets-3.1.2
+    ./configure --disable-shared --enable-cxx11 --with-cxx=11 \
+      --with-macosx-version-min=$MACOSX_DEPLOYMENT_TARGET \
+      --without-libtiff
+    make install
+  configure_script: cmake -G Xcode -S . -B build
+  build_script: |
+    BUILD_TYPE=$(if [[ "$CIRRUS_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then if [[ "$CIRRUS_TAG" =~ -[a-z] ]]; then echo RelWithDebInfo; else echo Release; fi; else echo Debug; fi)
+    cmake --build build --target package --config $BUILD_TYPE -- \
+      CC=/usr/local/opt/ccache/libexec/clang \
+      CPLUSPLUS=/usr/local/opt/ccache/libexec/clang++ | \
+      xcpretty -c -f `xcpretty-travis-formatter`; test ${PIPESTATUS[0]} -eq 0
+    ccache -s
+    for p in build/*.dmg; do mv -v $p ${p%Darwin.*}macos.dmg; done
+    mv -v build/*.dmg .
+  package_artifacts:
+    path: "*.dmg"
+
+freebsd.12.0_task:
+  freebsd_instance:
+    image: freebsd-12-0-release-amd64
+  prepare_script: |
+    pkg install -y ccache git pkgconf gettext cmake wx31-gtk3 rapidjson lua53
+    ln -s /usr/local/bin/wxgtk3u-3.1-config /usr/local/bin/wx-config
+    ln -s /usr/local/bin/wxrc-gtk3u-3.1 /usr/local/bin/wxrc
+  clone_script: |
+    if [ -z "$CIRRUS_PR" ]; then
+      git clone --recursive --single-branch --branch=$CIRRUS_BRANCH ${CIRRUS_REPO_CLONE_URL} $CIRRUS_WORKING_DIR
+    else
+      git clone --recursive ${CIRRUS_REPO_CLONE_URL} $CIRRUS_WORKING_DIR
+      git fetch origin pull/$CIRRUS_PR/head:pull/$CIRRUS_PR
+    fi
+    git reset --hard $CIRRUS_CHANGE_IN_REPO
+  ccache_cache:
+    folder: ~/.ccache
+  configure_script: cmake -DCMAKE_BUILD_TYPE=Debug -S . -B build
+  build_script: cmake --build build --target mmex && ccache -s
+  install_script: cmake --build build --target install
+
+windows.2019_task:
+  windows_container:
+    dockerfile: dockers/windows.vs2017/Dockerfile
+    os_version: 2019
+  env:
+    CIRRUS_WORKING_DIR: c:\mmex
+    CLCACHE_DIR: c:\cl_cache
+    CL: /MP
+  clone_script: |
+    cmd /c if not defined CIRRUS_PR git clone --recursive --single-branch --branch=%CIRRUS_BRANCH% %CIRRUS_REPO_CLONE_URL% %CIRRUS_WORKING_DIR%
+    cmd /c if defined CIRRUS_PR git clone --recursive %CIRRUS_REPO_CLONE_URL% %CIRRUS_WORKING_DIR%
+    cmd /c if defined CIRRUS_PR git fetch origin pull/%CIRRUS_PR%/head:pull/%CIRRUS_PR%
+    git reset --hard %CIRRUS_CHANGE_IN_REPO%
+  clcache_cache:
+    folder: $CLCACHE_DIR
+  configure_script: cmake -G "Visual Studio 15 2017 Win64" -S . -B build
+  build_script: |
+    cmake --build build --target package --config Release -- /maxcpucount /verbosity:minimal /nologo /p:PreferredToolArchitecture=x64
+    cmd /c for %%%%f in (build\*.exe build\*.zip) do if /i %%%%~xf==.exe (move "%%%%f" "%%%%~nf.exe") else (move "%%%%f" "%%%%~nf-portable.zip")
+    clcache -s
+  package_artifacts:
+    path: "*.{exe,zip}"

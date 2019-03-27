@@ -5,6 +5,7 @@ RUN echo deb http://ftp.debian.org/debian stretch-backports main \
  && dpkg --add-architecture i386 && apt-get update \
  && apt-get install -y --no-install-recommends \
       build-essential \
+      ca-certificates \
       ccache \
       cmake \
       file \

@@ -3,6 +3,7 @@ LABEL maintainer="developers@moneymanagerex.org"
 RUN sed -ri 's/(([a-z]{2}\.)?archive|security)\.ubuntu\.com/old-releases.ubuntu.com/' /etc/apt/sources.list \
  && apt-get update && apt-get install -y --no-install-recommends \
       build-essential \
+      ca-certificates \
       ccache \
       cmake \
       file \

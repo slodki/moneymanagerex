@@ -4,6 +4,7 @@ RUN sed -ri 's/(([a-z]{2}\.)?archive|security)\.ubuntu\.com/old-releases.ubuntu.
  && dpkg --add-architecture i386 && apt-get update \
  && apt-get install -y --no-install-recommends \
       build-essential \
+      ca-certificates \
       ccache \
       cmake \
       file \

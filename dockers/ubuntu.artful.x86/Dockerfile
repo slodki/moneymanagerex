@@ -7,6 +7,7 @@ RUN chown _apt:root /etc/apt/trusted.gpg.d/CodeLite.asc \
  && dpkg --add-architecture i386 && apt-get update \
  && apt-get install -y --no-install-recommends \
       build-essential \
+      ca-certificates \
       ccache \
       cmake \
       file \
