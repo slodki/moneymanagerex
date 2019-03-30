@@ -92,7 +92,8 @@ init:
 
 cache:
 - '%wxwin%\lib -> ..\MSVC_ver.txt'
-- '%curlLibFolder% -> .appveyor.yml'
+- '%curlLibFolder%'
+# ' -> .appveyor.yml'
 - '%CLCACHE_DIR% -> ..\MSVC_ver.txt'
 - '%VCPKG_ROOT%\installed'
 
@@ -181,8 +182,8 @@ build_script:
 - if %configuration%==Debug
     set "cmake_def=-DCMAKE_INSTALL_DEBUG_LIBRARIES=ON -DCMAKE_INSTALL_DEBUG_LIBRARIES_ONLY=ON"
 - set "cmake_def=%cmake_def% -DCMAKE_PREFIX_PATH=%curlLibFolder% -DCMAKE_PREFIX_PATH=%VCPKG_ROOT%\installed\%VCPKG_DEFAULT_TRIPLET% -DVCPKG_TARGET_TRIPLET=%VCPKG_DEFAULT_TRIPLET%"
-- cmake --graphviz=mmex.dot -T v%comp%%xp%,host=x64 -G "Visual Studio %gen%" %cmake_def% ..
-- cmake --build . --target package --config %configuration% --trace-expand
+- cmake --graphviz=mmex.dot -T v%comp%%xp%,host=x64 -G "Visual Studio %gen%" %cmake_def% --trace-expand ..
+- cmake --build . --target package --config %configuration%
     -- /maxcpucount /verbosity:minimal /nologo /p:PreferredToolArchitecture=x64
 
 after_build:
