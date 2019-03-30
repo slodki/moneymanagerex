@@ -135,7 +135,7 @@ install:
 - echo set(CURL_USE_WINSSL ON) >> %VCPKG_ROOT%\triplets\%VCPKG_DEFAULT_TRIPLET%.cmake
 - vcpkg install wxwidgets
 - vcpkg list
-- dir /s %VCPKG_ROOT%\installed\%VCPKG_DEFAULT_TRIPLET%
+- dir /b /s %VCPKG_ROOT%\installed\%VCPKG_DEFAULT_TRIPLET%
 - set "wxWidgets_ROOT_DIR=%VCPKG_ROOT%\installed\%VCPKG_DEFAULT_TRIPLET%"
 # - type %VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake
 # libcurl
