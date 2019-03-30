@@ -136,6 +136,8 @@ install:
 - vcpkg install wxwidgets
 - vcpkg list
 - dir /b /s %VCPKG_ROOT%\installed\%VCPKG_DEFAULT_TRIPLET%
+- type C:\tools\vcpkg\installed\x64-windows-v141-mmex-static\share\tiff\vcpkg-cmake-wrapper.cmake
+- type C:\tools\vcpkg\installed\x64-windows-v141-mmex-static\share\jpeg\vcpkg-cmake-wrapper.cmake
 - set "wxWidgets_ROOT_DIR=%VCPKG_ROOT%\installed\%VCPKG_DEFAULT_TRIPLET%"
 # - type %VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake
 # libcurl
