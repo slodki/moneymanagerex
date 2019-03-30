@@ -446,6 +446,7 @@ if(wxWidgets_FIND_STYLE STREQUAL "win32")
       C:/
       D:/
       ENV ProgramFiles
+      C:/tools/vcpkg/installed
     PATH_SUFFIXES
       wxWidgets-3.1.0
       wxWidgets-3.0.2
@@ -482,6 +483,7 @@ if(wxWidgets_FIND_STYLE STREQUAL "win32")
       wxWidgets-2.5.2
       wxWidgets-2.5.1
       wxWidgets
+      x64-windows-v141-mmex-static
     DOC "wxWidgets base/installation directory"
     )
 
