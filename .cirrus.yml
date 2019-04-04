@@ -59,6 +59,8 @@ task:
   ccache_cache:
     folder: ~/.ccache
   configure_script: |
+    lscpu || true
+    nproc || true
     mkdir build && cd build
     BUILD_TYPE=$(if [[ "$CIRRUS_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then if [[ "$CIRRUS_TAG" =~ -[a-z] ]]; then echo RelWithDebInfo; else echo Release; fi; else echo Debug; fi)
     cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE ${ARCH:+-DCMAKE_TOOLCHAIN_FILE=util/toolchain-$CIRRUS_OS-${ARCH:1}.cmake} ..
@@ -101,6 +103,8 @@ mojave.xcode_task:
       --with-macosx-version-min=$MACOSX_DEPLOYMENT_TARGET \
       --without-libtiff
     make install
+    lscpu || true
+    nproc || true
   configure_script: cmake -G Xcode -S . -B build
   build_script: |
     BUILD_TYPE=$(if [[ "$CIRRUS_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then if [[ "$CIRRUS_TAG" =~ -[a-z] ]]; then echo RelWithDebInfo; else echo Release; fi; else echo Debug; fi)
@@ -121,6 +125,8 @@ freebsd.12.0_task:
     pkg install -y ccache git pkgconf gettext cmake wx31-gtk3 rapidjson lua53
     ln -s /usr/local/bin/wxgtk3u-3.1-config /usr/local/bin/wx-config
     ln -s /usr/local/bin/wxrc-gtk3u-3.1 /usr/local/bin/wxrc
+    lscpu || true
+    nproc || true
   clone_script: |
     if [ -z "$CIRRUS_PR" ]; then
       git clone --recursive --single-branch --branch=$CIRRUS_BRANCH ${CIRRUS_REPO_CLONE_URL} $CIRRUS_WORKING_DIR
