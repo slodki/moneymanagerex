@@ -27,6 +27,7 @@ environment:
   path: '%path%;C:\cygwin64\bin'
   # clcache config
   clcVer: 4.1.0
+  CLCACHE_HARDLINK: 1
   # libcurl config
   curlVer: 7_64_1
   curldir: C:\curl-$(curlVer)
