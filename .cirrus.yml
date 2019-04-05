@@ -1,10 +1,8 @@
-env:
-  CCACHE_SLOPPINESS: time_macros
-  CMAKE_BUILD_PARALLEL_LEVEL: 8
-  MAKEFLAGS: -j8
-
 task:
   env:
+    CCACHE_SLOPPINESS: time_macros
+    CMAKE_BUILD_PARALLEL_LEVEL: $(nproc)
+    MAKEFLAGS: -j$(nproc)
     # ARCH must be defined
     ARCH: ""
     matrix:
@@ -46,7 +44,6 @@ task:
   container:
     # image: moneymanagerex/mmex_build_env:$OS$DIST$ARCH
     dockerfile: dockers/$OS$DIST$ARCH/Dockerfile
-    cpu: 4
   clone_script: |
     CLONE_OPT="--recursive"
     if [ -z "$CIRRUS_PR" ]; then
@@ -61,6 +58,7 @@ task:
   configure_script: |
     lscpu || true
     nproc || true
+    echo xxx $CMAKE_BUILD_PARALLEL_LEVEL $MAKEFLAGS
     mkdir build && cd build
     BUILD_TYPE=$(if [[ "$CIRRUS_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then if [[ "$CIRRUS_TAG" =~ -[a-z] ]]; then echo RelWithDebInfo; else echo Release; fi; else echo Debug; fi)
     cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE ${ARCH:+-DCMAKE_TOOLCHAIN_FILE=util/toolchain-$CIRRUS_OS-${ARCH:1}.cmake} ..
@@ -82,6 +80,9 @@ mojave.xcode_task:
     CXXFLAGS: -stdlib=libc++
     LDFLAGS: -stdlib=libc++
     PATH: "/usr/local/opt/ccache/libexec:$PATH"
+    CCACHE_SLOPPINESS: time_macros
+    CMAKE_BUILD_PARALLEL_LEVEL: 8
+    MAKEFLAGS: -j8
   clone_script: |
     if [ -z "$CIRRUS_PR" ]; then
       git clone --recursive --single-branch --branch=$CIRRUS_BRANCH ${CIRRUS_REPO_CLONE_URL} $CIRRUS_WORKING_DIR
@@ -94,7 +95,6 @@ mojave.xcode_task:
     folder: ~/.ccache
   prepare_script: |
     brew update && brew bundle --verbose --file=util/Brewfile
-    ccache -s
     cd $HOME
     curl -fsSL -O https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.2/wxWidgets-3.1.2.tar.bz2
     tar xzf wxWidgets-*.tar.bz2
@@ -103,8 +103,8 @@ mojave.xcode_task:
       --with-macosx-version-min=$MACOSX_DEPLOYMENT_TARGET \
       --without-libtiff
     make install
-    lscpu || true
-    nproc || true
+    sysctl -n hw.ncpu || true
+    sysctl -n hw.logicalcpu || true
   configure_script: cmake -G Xcode -S . -B build
   build_script: |
     BUILD_TYPE=$(if [[ "$CIRRUS_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then if [[ "$CIRRUS_TAG" =~ -[a-z] ]]; then echo RelWithDebInfo; else echo Release; fi; else echo Debug; fi)
@@ -121,12 +121,16 @@ mojave.xcode_task:
 freebsd.12.0_task:
   freebsd_instance:
     image: freebsd-12-0-release-amd64
+  env:
+    CCACHE_SLOPPINESS: time_macros
+    CMAKE_BUILD_PARALLEL_LEVEL: 8
+    MAKEFLAGS: -j8
   prepare_script: |
     pkg install -y ccache git pkgconf gettext cmake wx31-gtk3 rapidjson lua53
     ln -s /usr/local/bin/wxgtk3u-3.1-config /usr/local/bin/wx-config
     ln -s /usr/local/bin/wxrc-gtk3u-3.1 /usr/local/bin/wxrc
-    lscpu || true
-    nproc || true
+    sysctl -n hw.ncpu || true
+    sysctl kern.smp.cpus || true
   clone_script: |
     if [ -z "$CIRRUS_PR" ]; then
       git clone --recursive --single-branch --branch=$CIRRUS_BRANCH ${CIRRUS_REPO_CLONE_URL} $CIRRUS_WORKING_DIR
@@ -150,6 +154,7 @@ windows.2019_task:
     CLCACHE_DIR: c:\cl_cache
     CLCACHE_HARDLINK: 1
     CL: /MP
+    CMAKE_BUILD_PARALLEL_LEVEL: $NUMBER_OF_PROCESSORS
   clone_script: |
     cmd /c if not defined CIRRUS_PR git clone --recursive --single-branch --branch=%CIRRUS_BRANCH% %CIRRUS_REPO_CLONE_URL% %CIRRUS_WORKING_DIR%
     cmd /c if defined CIRRUS_PR git clone --recursive %CIRRUS_REPO_CLONE_URL% %CIRRUS_WORKING_DIR%
@@ -159,6 +164,7 @@ windows.2019_task:
     folder: $CLCACHE_DIR
   configure_script: cmake -G "Visual Studio 15 2017 Win64" -S . -B build
   build_script: |
+    echo xxx %CMAKE_BUILD_PARALLEL_LEVEL% %NUMBER_OF_PROCESSORS%
     cmake --build build --target package --config Release -- /maxcpucount /verbosity:minimal /nologo /p:PreferredToolArchitecture=x64
     cmd /c for %%%%f in (build\*.exe build\*.zip) do if /i %%%%~xf==.exe (move "%%%%f" "%%%%~nf.exe") else (move "%%%%f" "%%%%~nf-portable.zip")
     clcache -s

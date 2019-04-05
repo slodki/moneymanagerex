@@ -10,7 +10,7 @@ cache: ccache
 env:
   global:
   - CCACHE_SLOPPINESS=time_macros
-  - CMAKE_BUILD_PARALLEL_LEVEL=4
+  - CMAKE_BUILD_PARALLEL_LEVEL=$(nproc || echo 4)
   - MAKEFLAGS=-j$CMAKE_BUILD_PARALLEL_LEVEL
   - BUILD_TYPE=$(if [[ "$TRAVIS_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then if [[ "$TRAVIS_TAG" =~ -[a-z] ]]; then echo RelWithDebInfo; else echo Release; fi; else echo Debug; fi)
   matrix: # targets for linux
@@ -150,12 +150,10 @@ script: |-
       docker run -it --rm -w /moneymanagerex/build -e MAKEFLAGS \
                 -v $HOME/.ccache:/root/.ccache \
                 -v $TRAVIS_BUILD_DIR:/moneymanagerex ${DOCKER} \
-        bash -c "lscpu || true; nproc || true; $CMAKE_CMD -DCMAKE_BUILD_TYPE=$BUILD_TYPE && cmake --build . --target package && eval \$MMEX_INST_CMD" ;;
+        bash -c "$CMAKE_CMD -DCMAKE_BUILD_TYPE=$BUILD_TYPE && cmake --build . --target package && eval \$MMEX_INST_CMD" ;;
     osx)
       export CXXFLAGS=-stdlib=libc++ # exports required by Xcode 10 or later
       export LDFLAGS=-stdlib=libc++
-      lscpu || true
-      nproc || true
       $CMAKE_CMD -G Xcode && cmake --build . --target package --config $BUILD_TYPE -- \
         CC=/usr/local/opt/ccache/libexec/clang \
         CPLUSPLUS=/usr/local/opt/ccache/libexec/clang++ | \
