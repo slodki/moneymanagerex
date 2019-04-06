@@ -22,6 +22,7 @@ matrix:
 
 environment:
   # use cache with 7z compression
+  APPVEYOR_SAVE_CACHE_ON_ERROR: true
   APPVEYOR_CACHE_ENTRY_ZIP_ARGS: -t7z -m0=lzma -mx=9
   # Use cygwin embedded gettext tools
   path: '%path%;C:\cygwin64\bin'
@@ -94,9 +95,12 @@ cache:
 
 install:
 # setup clcache
-- nuget install clcache -Version %clcVer% -ExcludeVersion -OutputDirectory c:\ -Verbosity quiet
-- copy c:\clcache\clcache-%clcVer%\clcache.exe c:\clcache\clcache-%clcVer%\cl.exe
+# - nuget install clcache -Version %clcVer% -ExcludeVersion -OutputDirectory c:\ -Verbosity quiet
+- pip install git+https://github.com/frerich/clcache.git
+# - copy c:\clcache\clcache-%clcVer%\clcache.exe c:\clcache\clcache-%clcVer%\cl.exe
 - set "PATH=c:\clcache\clcache-%clcVer%;%PATH%"
+- set CLCACHE_SERVER=1
+- ps: $clcache-server = Start-Process clcache-server.exe -PassThru
 - clcache -s
 # wxWidgets, try to download pre-compiled version first
 - if %wxShared%==1 (
@@ -175,6 +179,9 @@ after_build:
     else (move "%%f" "..\%%~nf%xp%%pkgsuff%-portable.zip")
 
 test: off
+
+on_finish:
+- ps: Stop-Process -Id $clcache-server.Id
 
 on_success:
 # don't cache downloaded wxWidgets binaries
