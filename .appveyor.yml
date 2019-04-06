@@ -94,9 +94,9 @@ cache:
 
 install:
 # setup clcache
-- nuget install clcache -Version %clcVer% -ExcludeVersion -Verbosity quiet
-- copy clcache\clcache-%clcVer%\clcache.exe clcache\clcache-%clcVer%\cl.exe
-- if exist %APPVEYOR_BUILD_FOLDER%\clcache\clcache-%clcVer%\cl.exe set "PATH=%APPVEYOR_BUILD_FOLDER%\clcache\clcache-%clcVer%;%PATH%"
+- nuget install clcache -Version %clcVer% -ExcludeVersion -OutputDirectory c:\ -Verbosity quiet
+- copy c:\clcache\clcache-%clcVer%\clcache.exe c:\clcache\clcache-%clcVer%\cl.exe
+- set "PATH=c:\clcache\clcache-%clcVer%;%PATH%"
 - clcache -s
 # wxWidgets, try to download pre-compiled version first
 - if %wxShared%==1 (
@@ -145,7 +145,7 @@ install:
       -S %curldir%-src -B %curldir%-src\build &&
     cmake --build %curldir%-src\build --target install --config %configuration%
       -- /maxcpucount /verbosity:minimal /nologo /p:PreferredToolArchitecture=x64
-         /p:TrackFileAccess=false /p:CLToolExe=clcache.exe /p:CLToolPath="%APPVEYOR_BUILD_FOLDER%\clcache\clcache-%clcVer%"
+         /p:TrackFileAccess=false /p:CLToolExe=clcache.exe /p:CLToolPath=c:\clcache\clcache-%clcVer%
   )
 
 before_build:

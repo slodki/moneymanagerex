@@ -150,7 +150,7 @@ script: |-
       docker run -it --rm -w /moneymanagerex/build -e MAKEFLAGS \
                 -v $HOME/.ccache:/root/.ccache \
                 -v $TRAVIS_BUILD_DIR:/moneymanagerex ${DOCKER} \
-        bash -c "echo MAKEFLAGS=\'$MAKEFLAGS\' >>/etc/makepkg.conf; cat /etc/makepkg.conf; $CMAKE_CMD -DCMAKE_BUILD_TYPE=$BUILD_TYPE && cmake --build . --target package && eval \$MMEX_INST_CMD" ;;
+        bash -c "echo MAKEFLAGS=\'$MAKEFLAGS\' >>\$HOME/.makepkg.conf; $CMAKE_CMD -DCMAKE_BUILD_TYPE=$BUILD_TYPE && cmake --build . --target package && eval \$MMEX_INST_CMD" ;;
     osx)
       export CXXFLAGS=-stdlib=libc++ # exports required by Xcode 10 or later
       export LDFLAGS=-stdlib=libc++
