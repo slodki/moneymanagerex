@@ -27,7 +27,7 @@ environment:
   # Use cygwin embedded gettext tools and select Python version
   Path: 'c:\Python36;c:\Python36\Scripts;%path%;c:\cygwin64\bin'
   # clcache config
-  clcVer: 4.1.0
+  USE_CLCACHE: 1
   CLCACHE_HARDLINK: 1
   # libcurl config
   curlVer: 7_64_1
@@ -96,10 +96,7 @@ cache:
 
 install:
 # setup clcache
-# - nuget install clcache -Version %clcVer% -ExcludeVersion -OutputDirectory c:\ -Verbosity quiet
 - pip install git+https://github.com/frerich/clcache.git
-# - copy c:\clcache\clcache-%clcVer%\clcache.exe c:\clcache\clcache-%clcVer%\cl.exe
-# - set "PATH=c:\clcache\clcache-%clcVer%;%PATH%"
 - set CLCACHE_SERVER=1
 - ps: $clcacheServ = Start-Process clcache-server.exe -PassThru
 - clcache -s
@@ -122,7 +119,7 @@ install:
     cd %wxwin%\build\msw &&
     nmake /nologo /s /f makefile.vc %wxConf% COMPILER_VERSION=%comp%%xp%
       TARGET_CPU=%platform% DEBUG_INFO=default SHARED=%wxShared% VENDOR=mmex %wxFlags%
-      wxUSE_UNSAFE_WXSTRING_CONV=0
+      wxUSE_UNSAFE_WXSTRING_CONV=0 CC=clcache.exe CXX=clcache.exe
   )
 # libcurl
 - if %configuration%==Debug (set "curlConf=-DENABLE_DEBUG=ON")
@@ -150,7 +147,7 @@ install:
       -S %curldir%-src -B %curldir%-src\build &&
     cmake --build %curldir%-src\build --target install --config %configuration%
       -- /maxcpucount /verbosity:minimal /nologo /p:PreferredToolArchitecture=x64
-         /p:TrackFileAccess=false /p:CLToolExe=clcache.exe /p:CLToolPath=c:\clcache\clcache-%clcVer%
+         /p:TrackFileAccess=false /p:CLToolExe=clcache.exe /p:CLToolPath=c:\Python36\Scripts
   )
 
 before_build:
