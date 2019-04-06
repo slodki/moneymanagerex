@@ -101,7 +101,7 @@ install:
 # - copy c:\clcache\clcache-%clcVer%\clcache.exe c:\clcache\clcache-%clcVer%\cl.exe
 # - set "PATH=c:\clcache\clcache-%clcVer%;%PATH%"
 - set
-- dir /b/s c:\clcache*.*
+- dir /b/s c:\Python*\clcache*.*
 - set "PATH=c:\Python36-x64\Scripts;%PATH%"
 - set CLCACHE_SERVER=1
 - ps: $clcacheServ = Start-Process clcache-server.exe -PassThru
