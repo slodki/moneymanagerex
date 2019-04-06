@@ -1,7 +1,6 @@
 # escape=`
 FROM cirrusci/windowsservercore:2019
 LABEL maintainer="developers@moneymanagerex.org"
-ARG clcacheVer=4.1.0
 ARG wxVer=3.1.2
 ARG wxURL=https://github.com/wxWidgets/wxWidgets/releases/download/v$wxVer/
 ARG curlVer=7_64_1
@@ -15,12 +14,12 @@ RUN python --version && pip --version && cinst --no-progress -y `
       7zip.commandline `
       cmake `
       nsis `
-      nuget.commandline `
       pkgconfiglite `
+      python3 `
       visualstudio2017-workload-vctools `
- && nuget install clcache -Version %clcacheVer% -ExcludeVersion -OutputDirectory c:\ `
- && copy c:\clcache\clcache-%clcacheVer%\clcache.exe c:\clcache\clcache-%clcacheVer%\cl.exe `
  && rmdir /q/s %TEMP%\chocolatey `
+ && pip install git+https://github.com/frerich/clcache.git `
+ && rmdir /q/s "%LOCALAPPDATA%\pip\Cache" `
  && curl -fsL --fail-early `
       -O %gettextURL%/v0.19.8.1-v1.15/gettext0.19.8.1-iconv1.15-shared-64.zip `
  && 7z x -y "-oc:\gettext" gettext*.zip `
@@ -55,4 +54,4 @@ RUN python --version && pip --version && cinst --no-progress -y `
       -S %CURL_ROOT%-src -B %CURL_ROOT%-src\build `
  && cmake --build %CURL_ROOT%-src\build --target install --config Release `
       -- /maxcpucount /verbosity:minimal /nologo /p:PreferredToolArchitecture=x64 `
- && rmdir /q/s %CURL_ROOT%-src
+ && rmdir /q/s %CURL_ROOT%-src %HOME%\clcache
