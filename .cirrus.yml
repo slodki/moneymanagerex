@@ -58,9 +58,8 @@ task:
     BUILD_TYPE=$(if [[ "$CIRRUS_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then if [[ "$CIRRUS_TAG" =~ -[a-z] ]]; then echo RelWithDebInfo; else echo Release; fi; else echo Debug; fi)
     cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE ${ARCH:+-DCMAKE_TOOLCHAIN_FILE=util/toolchain-$CIRRUS_OS-${ARCH:1}.cmake} ..
   build_script: |
-    if [ "$OS" == "archlinux" ]; then chmod -fR a+rwX ~/.ccache; cat /etc/makepkg.conf; fi
+    if [ "$OS" == "archlinux" ]; then chmod -fR a+rwX ~/.ccache; echo MAKEFLAGS=\"-j$(nproc)\" >>/etc/makepkg.conf ; cat /etc/makepkg.conf; fi
     CMAKE_BUILD_PARALLEL_LEVEL=$(nproc)
-    MAKEFLAGS=$(nproc)
     cmake --build build --target package
     ccache -s
   install_script: |
