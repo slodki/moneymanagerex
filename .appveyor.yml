@@ -78,7 +78,7 @@ init:
 # Print some info
 - echo %APPVEYOR_BUILD_WORKER_IMAGE% %platform% v%comp%%xp% %configuration% %arch%
 # clcache unique directory
-- set "CLCACHE_DIR=C:\clcache-%APPVEYOR_BUILD_WORKER_IMAGE: =%-%platform%-v%comp%%xp%-%clver%"
+- 'set "CLCACHE_DIR=C:\clcache-%APPVEYOR_BUILD_WORKER_IMAGE: =%-%platform%-v%comp%%xp%-%clver%"'
 # prepare cmake options
 - if %comp%==120 set "gen=12 2013"
 - if %comp%==140 set "gen=14 2015"
