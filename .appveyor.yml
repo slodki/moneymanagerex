@@ -152,10 +152,10 @@ before_build:
 - cd %APPVEYOR_BUILD_FOLDER%
 - git submodule update -q --init
 # regenerate database files
-- cd src\db &&
-  python ..\..\util\sqlite2cpp.py ..\..\database\tables.sql &&
-  python ..\..\util\sqliteupgrade2cpp.py ..\..\database\incremental_upgrade &&
-  del *.mmdbg sql*.sql
+# - cd src\db &&
+#   python ..\..\util\sqlite2cpp.py ..\..\database\tables.sql &&
+#   python ..\..\util\sqliteupgrade2cpp.py ..\..\database\incremental_upgrade &&
+#   del *.mmdbg sql*.sql
 
 build_script:
 - if %configuration%==Debug
