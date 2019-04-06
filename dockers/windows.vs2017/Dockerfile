@@ -11,7 +11,7 @@ ARG chocolateyUseWindowsCompression=false
 ENV wxwin c:\wxWidgets-$wxVer
 ENV CURL_ROOT=c:\curl-$curlVer
 RUN setx path "c:\clcache\clcache-%clcacheVer%;%path%;%ProgramFiles%\CMake\bin;c:\gettext\bin"
-RUN cinst --no-progress -y `
+RUN python --version && pip --version && cinst --no-progress -y `
       7zip.commandline `
       cmake `
       nsis `
