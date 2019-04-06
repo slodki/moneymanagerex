@@ -54,15 +54,13 @@ task:
   ccache_cache:
     folder: ~/.ccache
   configure_script: |
-    lscpu || true
-    nproc || true
-    echo xxx $CMAKE_BUILD_PARALLEL_LEVEL $MAKEFLAGS
     mkdir build && cd build
     BUILD_TYPE=$(if [[ "$CIRRUS_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then if [[ "$CIRRUS_TAG" =~ -[a-z] ]]; then echo RelWithDebInfo; else echo Release; fi; else echo Debug; fi)
     cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE ${ARCH:+-DCMAKE_TOOLCHAIN_FILE=util/toolchain-$CIRRUS_OS-${ARCH:1}.cmake} ..
   build_script: |
     if [ "$OS" == "archlinux" ]; then chmod -fR a+rwX ~/.ccache; fi
-    cmake --build build --target package -j $(nproc)
+    CMAKE_BUILD_PARALLEL_LEVEL=$(nproc)
+    cmake --build build --target package
     ccache -s
   install_script: |
     mv -v -t . build/*.{deb,rpm,txz,pkg.tar.xz} || true
@@ -95,14 +93,16 @@ mojave.xcode_task:
     curl -fsSL -O https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.2/wxWidgets-3.1.2.tar.bz2
     tar xzf wxWidgets-*.tar.bz2
     cd wxWidgets-3.1.2
+    MAKEFLAGS=$(sysctl -n hw.ncpu)
     ./configure --disable-shared --enable-cxx11 --with-cxx=11 \
       --with-macosx-version-min=$MACOSX_DEPLOYMENT_TARGET \
       --without-libtiff
-    make -j $(sysctl -n hw.ncpu) install
+    make install
   configure_script: cmake -G Xcode -S . -B build
   build_script: |
+    CMAKE_BUILD_PARALLEL_LEVEL=$(sysctl -n hw.ncpu)
     BUILD_TYPE=$(if [[ "$CIRRUS_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then if [[ "$CIRRUS_TAG" =~ -[a-z] ]]; then echo RelWithDebInfo; else echo Release; fi; else echo Debug; fi)
-    cmake --build build --target package --config $BUILD_TYPE -j $(sysctl -n hw.ncpu) -- \
+    cmake --build build --target package --config $BUILD_TYPE -- \
       CC=/usr/local/opt/ccache/libexec/clang \
       CPLUSPLUS=/usr/local/opt/ccache/libexec/clang++ | \
       xcpretty -c ; test ${PIPESTATUS[0]} -eq 0
@@ -132,7 +132,10 @@ freebsd.12.0_task:
   ccache_cache:
     folder: ~/.ccache
   configure_script: cmake -DCMAKE_BUILD_TYPE=Debug -S . -B build
-  build_script: cmake --build build --target mmex -j $(sysctl -n hw.ncpu) && ccache -s
+  build_script: |
+    CMAKE_BUILD_PARALLEL_LEVEL=$(sysctl -n hw.ncpu)
+    cmake --build build --target mmex
+    ccache -s
   install_script: cmake --build build --target install
 
 windows.2019_task:

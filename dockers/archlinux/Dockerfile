@@ -24,7 +24,6 @@ RUN ln -sf /usr/bin/wx-config{-gtk3,} || true
 # unlock nobody required for makepkg
 # and configure for ccache
 RUN usermod nobody -a -G root -d /root -s /usr/bin/bash \
- && mkdir -m 0775 /root/.ccache \
- && sed -i '/^BUILDENV=/s/!ccache/ccache/' /etc/makepkg.conf
+ && mkdir -m 0775 /root/.ccache
 
 ENV MMEX_INST_CMD pacman -U --noconfirm ./mmex-*.pkg.tar.xz
