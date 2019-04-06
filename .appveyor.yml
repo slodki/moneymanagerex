@@ -100,7 +100,7 @@ install:
 # - copy c:\clcache\clcache-%clcVer%\clcache.exe c:\clcache\clcache-%clcVer%\cl.exe
 - set "PATH=c:\clcache\clcache-%clcVer%;%PATH%"
 - set CLCACHE_SERVER=1
-- ps: $clcache-server = Start-Process clcache-server.exe -PassThru
+- ps: $clcacheServ = Start-Process clcache-server.exe -PassThru
 - clcache -s
 # wxWidgets, try to download pre-compiled version first
 - if %wxShared%==1 (
@@ -181,7 +181,7 @@ after_build:
 test: off
 
 on_finish:
-- ps: Stop-Process -Id $clcache-server.Id
+- ps: Stop-Process -Id $clcacheServ.Id
 
 on_success:
 # don't cache downloaded wxWidgets binaries
