@@ -13,7 +13,7 @@ url="@CPACK_DEBIAN_PACKAGE_HOMEPAGE@"
 license=('@CPACK_RPM_PACKAGE_LICENSE@')
 depends=(wxgtk3 webkit2gtk)
 replaces=(moneymanagerex)
-options=(color ccache makeflags)
+options=(ccache makeflags)
 
 build() { make -C "${startdir}"; }
 package() { make -C "${startdir}" DESTDIR="${pkgdir}" install; }
