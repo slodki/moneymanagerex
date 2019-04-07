@@ -19,6 +19,7 @@ matrix:
   - { comp: 140, image: Visual Studio 2015 }
   allow_failures:
   - configuration: Debug
+  - xp: _xp
 
 environment:
   # use cache with 7z compression
