@@ -19,6 +19,7 @@ RUN cinst --no-progress -y `
  && cinst --no-progress -y python --params "/InstallDir:c:\Python" `
  && rmdir /q/s %TEMP%\chocolatey `
  && refreshenv `
+ && pip install certifi `
  && pip install git+https://github.com/frerich/clcache.git `
  && rmdir /q/s "%LOCALAPPDATA%\pip\Cache" `
  && curl -fsL --fail-early `
