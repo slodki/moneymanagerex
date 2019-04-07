@@ -56,4 +56,4 @@ RUN cinst --no-progress -y `
       -S %CURL_ROOT%-src -B %CURL_ROOT%-src\build `
  && cmake --build %CURL_ROOT%-src\build --target install --config Release `
       -- /maxcpucount /verbosity:minimal /nologo /p:PreferredToolArchitecture=x64 `
- && rmdir /q/s %CURL_ROOT%-src %HOME%\clcache
+ && rmdir /q/s %CURL_ROOT%-src

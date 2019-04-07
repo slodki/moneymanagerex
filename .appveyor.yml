@@ -100,6 +100,7 @@ install:
 - pip install git+https://github.com/frerich/clcache.git
 - set CLCACHE_SERVER=1
 - ps: $clcacheServ = Start-Process clcache-server.exe -PassThru
+- clcache
 - clcache --help
 - clcache -s
 # wxWidgets, try to download pre-compiled version first
