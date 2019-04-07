@@ -25,8 +25,10 @@ environment:
   # use cache with 7z compression
   APPVEYOR_SAVE_CACHE_ON_ERROR: true
   APPVEYOR_CACHE_ENTRY_ZIP_ARGS: -t7z -m0=lzma -mx=9
-  # Use cygwin embedded gettext tools and select Python version
-  Path: 'c:\Python36;c:\Python36\Scripts;%path%;c:\cygwin64\bin'
+  # select Python version
+  Python: Python36
+  # Use above Python and cygwin embedded gettext tools
+  Path: 'c:\$(Python);c:\$(Python)\Scripts;%path%;c:\cygwin64\bin'
   # clcache config
   USE_CLCACHE: 1
   CLCACHE_HARDLINK: 1
@@ -100,8 +102,6 @@ install:
 - pip install git+https://github.com/frerich/clcache.git
 - set CLCACHE_SERVER=1
 - ps: $clcacheServ = Start-Process clcache-server.exe -PassThru
-- clcache
-- clcache --help
 - clcache -s
 # wxWidgets, try to download pre-compiled version first
 - if %wxShared%==1 (
@@ -150,7 +150,7 @@ install:
       -S %curldir%-src -B %curldir%-src\build &&
     cmake --build %curldir%-src\build --target install --config %configuration%
       -- /maxcpucount /verbosity:minimal /nologo /p:PreferredToolArchitecture=x64
-         /p:TrackFileAccess=false /p:CLToolExe=clcache.exe /p:CLToolPath=c:\Python36\Scripts
+         /p:TrackFileAccess=false /p:CLToolExe=clcache.exe /p:CLToolPath=c:\%Python%\Scripts
   )
 
 before_build:
