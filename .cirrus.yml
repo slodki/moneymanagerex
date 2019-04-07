@@ -147,7 +147,6 @@ windows.2019_task:
     CLCACHE_DIR: c:\cl_cache
     CLCACHE_HARDLINK: 1
     CL: /MP
-    CMAKE_BUILD_PARALLEL_LEVEL: $NUMBER_OF_PROCESSORS
   clone_script: |
     cmd /c if not defined CIRRUS_PR git clone --recursive --single-branch --branch=%CIRRUS_BRANCH% %CIRRUS_REPO_CLONE_URL% %CIRRUS_WORKING_DIR%
     cmd /c if defined CIRRUS_PR git clone --recursive %CIRRUS_REPO_CLONE_URL% %CIRRUS_WORKING_DIR%

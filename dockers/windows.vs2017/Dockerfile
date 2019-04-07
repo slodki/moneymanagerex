@@ -9,7 +9,7 @@ ARG comp=141
 ARG chocolateyUseWindowsCompression=false
 ENV wxwin c:\wxWidgets-$wxVer
 ENV CURL_ROOT=c:\curl-$curlVer
-RUN setx path "c:\clcache\clcache-%clcacheVer%;%path%;%ProgramFiles%\CMake\bin;c:\gettext\bin"
+RUN setx path "c:\Python37;c:\Python37\Scripts;%path%;%ProgramFiles%\CMake\bin;c:\gettext\bin"
 RUN cinst --no-progress -y `
       7zip.commandline `
       cmake `
@@ -18,6 +18,7 @@ RUN cinst --no-progress -y `
       python3 `
       visualstudio2017-workload-vctools `
  && rmdir /q/s %TEMP%\chocolatey `
+ && refreshenv `
  && pip install git+https://github.com/frerich/clcache.git `
  && rmdir /q/s "%LOCALAPPDATA%\pip\Cache" `
  && curl -fsL --fail-early `
