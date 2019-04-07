@@ -16,7 +16,7 @@ RUN cinst --no-progress -y `
       nsis `
       pkgconfiglite `
       visualstudio2017-workload-vctools `
- && cinst --no-progress -y python --params "/InstallDir:c:\Python" `
+ && cinst --no-progress -y python3 --params "/InstallDir:c:\Python" `
  && rmdir /q/s %TEMP%\chocolatey `
  && refreshenv `
  && pip install certifi `
