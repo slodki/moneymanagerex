@@ -146,6 +146,7 @@ windows.2019_task:
     CIRRUS_WORKING_DIR: c:\mmex
     CLCACHE_DIR: c:\cl_cache
     CLCACHE_HARDLINK: 1
+    CLCACHE_LOG: 1
     CL: /MP
   clone_script: |
     cmd /c if not defined CIRRUS_PR git clone --recursive --single-branch --branch=%CIRRUS_BRANCH% %CIRRUS_REPO_CLONE_URL% %CIRRUS_WORKING_DIR%

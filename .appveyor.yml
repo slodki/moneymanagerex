@@ -32,6 +32,7 @@ environment:
   # clcache config
   USE_CLCACHE: 1
   CLCACHE_HARDLINK: 1
+  CLCACHE_LOG: 1
   # libcurl config
   curlVer: 7_64_1
   curldir: C:\curl-$(curlVer)
