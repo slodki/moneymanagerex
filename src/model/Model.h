@@ -51,7 +51,7 @@ namespace std
 class ModelBase
 {
 public:
-    ModelBase():db_(0) {};
+    ModelBase():db_(nullptr) {};
     virtual ~ModelBase() {};
 
 public:
@@ -203,8 +203,8 @@ public:
     // Return accomulated table stats as a json string
     wxString  GetTableStatsAsJson() const
     {
-        StringBuffer json_buffer;
-        Writer<StringBuffer> json_writer(json_buffer);
+        StringBuffer json_buffer(nullptr);
+        Writer<StringBuffer> json_writer(json_buffer, nullptr);
         json_writer.StartObject();
         json_writer.Key("table");
         json_writer.String(this->name().c_str());

@@ -206,7 +206,7 @@ void mmListCtrl::OnHeaderColumn(wxCommandEvent& event)
             default_width = wxLIST_AUTOSIZE_USEHEADER;
         const wxString parameter_name = wxString::Format(m_col_width, columnNbr);
         int cur_width = Model_Setting::instance().GetIntSetting(parameter_name, default_width);
-        int new_width = (cur_width != 0 ? 0 : default_width);
+        int new_width = (cur_width ? 0 : default_width);
         SetColumnWidth(columnNbr, new_width);
         Model_Setting::instance().Set(parameter_name, GetColumnWidth(columnNbr));
     }

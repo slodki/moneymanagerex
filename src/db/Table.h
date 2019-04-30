@@ -7,7 +7,7 @@
  * @author    Guan Lisheng (guanlisheng@gmail.com)
  * @author    Stefano Giorgio (stef145g)
  * @author    Tomasz Słodkowicz
- * @date      2018-10-07 02:45:31.001407
+ * @date      2019-04-30 03:41:33.533622
  */
 #pragma once
 
@@ -19,10 +19,10 @@
 #include <wx/intl.h>
 #include <wx/log.h>
 
-#include "rapidjson/document.h"
-#include "rapidjson/pointer.h"
-#include "rapidjson/prettywriter.h"
-#include "rapidjson/stringbuffer.h"
+#include <rapidjson/document.h>
+#include <rapidjson/pointer.h>
+#include <rapidjson/prettywriter.h>
+#include <rapidjson/stringbuffer.h>
 using namespace rapidjson;
 
 #include <html_template.h>
@@ -46,18 +46,18 @@ struct DB_Table
     virtual ~DB_Table() {};
     wxString query_;
     size_t hit_, miss_, skip_;
-    virtual wxString query() const { return this->query_; }
+    virtual wxString query() const { return query_; }
     virtual size_t num_columns() const = 0;
     virtual wxString name() const = 0;
 
     bool exists(wxSQLite3Database* db) const
     {
-       return db->TableExists(this->name());
+       return db->TableExists(name());
     }
 
     void drop(wxSQLite3Database* db) const
     {
-        db->ExecuteUpdate("DROP TABLE IF EXISTS " + this->name());
+        db->ExecuteUpdate("DROP TABLE IF EXISTS " + name());
     }
 };
 

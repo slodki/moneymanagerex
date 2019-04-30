@@ -119,7 +119,7 @@ const wxArrayString Model_CustomField::all_type()
 
 const wxString Model_CustomField::getTooltip(const wxString& Properties)
 {
-    Document json_doc;
+    Document json_doc(nullptr, 1024, nullptr);
     if (!json_doc.Parse(Properties.c_str()).HasParseError())
     {
         if (json_doc.HasMember("Tooltip") && json_doc["Tooltip"].IsString()) {
@@ -132,7 +132,7 @@ const wxString Model_CustomField::getTooltip(const wxString& Properties)
 
 const wxString Model_CustomField::getRegEx(const wxString& Properties)
 {
-    Document json_doc;
+    Document json_doc(nullptr, 1024, nullptr);
     if (!json_doc.Parse(Properties.c_str()).HasParseError())
     {
         if (json_doc.HasMember("RegEx") && json_doc["RegEx"].IsString()) {
@@ -145,7 +145,7 @@ const wxString Model_CustomField::getRegEx(const wxString& Properties)
 
 bool Model_CustomField::getAutocomplete(const wxString& Properties)
 {
-    Document json_doc;
+    Document json_doc(nullptr, 1024, nullptr);
     if (!json_doc.Parse(Properties.c_str()).HasParseError())
     {
         if (json_doc.HasMember("Autocomplete") && json_doc["Autocomplete"].IsBool()) {
@@ -158,7 +158,7 @@ bool Model_CustomField::getAutocomplete(const wxString& Properties)
 
 const wxString Model_CustomField::getDefault(const wxString& Properties)
 {
-    Document json_doc;
+    Document json_doc(nullptr, 1024, nullptr);
     if (!json_doc.Parse(Properties.c_str()).HasParseError())
     {
         if (json_doc.HasMember("Default") && json_doc["Default"].IsString()) {
@@ -172,7 +172,7 @@ const wxString Model_CustomField::getDefault(const wxString& Properties)
 const wxArrayString Model_CustomField::getChoices(const wxString& Properties)
 {
     wxArrayString choices;
-    Document json_doc;
+    Document json_doc(nullptr, 1024, nullptr);
     if (!json_doc.Parse(Properties.c_str()).HasParseError())
     {
         if (json_doc.HasMember("Choice") && json_doc["Choice"].IsArray())
@@ -190,7 +190,7 @@ const wxArrayString Model_CustomField::getChoices(const wxString& Properties)
 
 const wxString Model_CustomField::getUDFC(const wxString& Properties)
 {
-    Document json_doc;
+    Document json_doc(nullptr, 1024, nullptr);
     if (!json_doc.Parse(Properties.c_str()).HasParseError())
     {
         if (json_doc.HasMember("UDFC") && json_doc["UDFC"].IsString()) {
@@ -215,7 +215,7 @@ const std::map<wxString, int> Model_CustomField::getMatrix(Model_Attachment::REF
 
 int Model_CustomField::getUDFCID(const wxString& ref_type, const wxString& name)
 {
-    Document json_doc;
+    Document json_doc(nullptr, 1024, nullptr);
     const auto& a = Model_CustomField::instance().find(REFTYPE(ref_type));
     for (const auto& item : a)
     {
@@ -237,7 +237,7 @@ int Model_CustomField::getUDFCID(const wxString& ref_type, const wxString& name)
 
 const wxString Model_CustomField::getUDFCName(const wxString& ref_type, const wxString& name)
 {
-    Document json_doc;
+    Document json_doc(nullptr, 1024, nullptr);
     const auto& a = Model_CustomField::instance().find(REFTYPE(ref_type));
     for (const auto& item : a)
     {
@@ -276,7 +276,7 @@ const wxArrayString Model_CustomField::getUDFCList(DB_Table_CUSTOMFIELD::Data* r
 
     if (r)
     {
-        Document json_doc;
+        Document json_doc(nullptr, 1024, nullptr);
         if (!json_doc.Parse(r->PROPERTIES.c_str()).HasParseError())
         {
             if (json_doc.HasMember("UDFC") && json_doc["UDFC"].IsString())
@@ -307,7 +307,7 @@ const wxArrayString Model_CustomField::getUDFCList(DB_Table_CUSTOMFIELD::Data* r
 
 int Model_CustomField::getDigitScale(const wxString& Properties)
 {
-    Document json_doc;
+    Document json_doc(nullptr, 1024, nullptr);
     if (!json_doc.Parse(Properties.c_str()).HasParseError())
     {
         if (json_doc.HasMember("DigitScale") && json_doc["DigitScale"].IsInt()) {
@@ -322,8 +322,8 @@ const wxString Model_CustomField::formatProperties(const wxString& Tooltip, cons
     , bool Autocomplete, const wxString& Default, const wxArrayString& Choices
     , const int DigitScale, const wxString& udfc_str)
 {
-    StringBuffer json_buffer;
-    Writer<StringBuffer> json_writer(json_buffer);
+    StringBuffer json_buffer(nullptr);
+    Writer<StringBuffer> json_writer(json_buffer, nullptr);
 
     json_writer.StartObject();
 

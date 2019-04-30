@@ -113,7 +113,7 @@ const wxString mmExportTransaction::getAccountHeaderQIF(int accountID)
             << "N" << account->ACCOUNTNAME << "\n"
             << "T" << qif_acc_type(account->ACCOUNTTYPE) << "\n"
             << "D" << currency_code << "\n"
-            << (dInitBalance != 0 ? wxString::Format("$%s\n", sInitBalance) : "")
+            << (dInitBalance ? wxString::Format("$%s\n", sInitBalance) : "")
             << "^" << "\n"
             << "!Type:Cash" << "\n";
     }

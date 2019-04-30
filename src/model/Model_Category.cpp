@@ -214,7 +214,7 @@ void Model_Category::getCategoryStats(
                     continue;
                 categoryStats[categID][transaction.SUBCATEGID][idx] += Model_Checking::balance(transaction) * convRate;
             }
-            else if (budgetAmt != 0)
+            else if (budgetAmt)
             {
                 double amt = transaction.TRANSAMOUNT * convRate;
                 if ((*budgetAmt)[categID][transaction.SUBCATEGID] < 0)

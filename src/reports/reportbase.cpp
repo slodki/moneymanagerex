@@ -43,15 +43,15 @@ mmPrintableBase::mmPrintableBase(const wxString& title)
 
 mmPrintableBase::~mmPrintableBase()
 {
-    Document j_doc;
+    Document j_doc(nullptr, 1024, nullptr);
     if (!j_doc.Parse(m_settings.c_str()).HasParseError()) {
 
         int id = -1;
         if (j_doc.HasMember("ID") && j_doc["ID"].IsInt()) {
             id = j_doc["ID"].GetInt();
 
-            StringBuffer json_buffer;
-            PrettyWriter<StringBuffer> json_writer(json_buffer);
+            StringBuffer json_buffer(nullptr);
+            PrettyWriter<StringBuffer> json_writer(json_buffer, nullptr);
 
             json_writer.StartObject();
             json_writer.Key("ID");
@@ -129,7 +129,7 @@ void mmPrintableBase::setAccounts(int selection, const wxString& name)
                     : Model_Account::instance().find(Model_Account::ACCOUNTTYPE(Model_Account::all_type()[Model_Account::INVESTMENT], NOT_EQUAL)));
                 std::stable_sort(accounts.begin(), accounts.end(), SorterByACCOUNTNAME());
 
-                mmMultiChoiceDialog mcd(0, _("Choose Accounts"), m_title, accounts);
+                mmMultiChoiceDialog mcd(nullptr, _("Choose Accounts"), m_title, accounts);
 
                 if (mcd.ShowModal() == wxID_OK)
                 {
@@ -186,7 +186,7 @@ void mmPrintableBase::setSettings(const wxString& settings)
 {
     m_settings = settings;
 
-    Document j_doc;
+    Document j_doc(nullptr, 1024, nullptr);
     if (j_doc.Parse(settings.c_str()).HasParseError())
         return;
 

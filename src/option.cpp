@@ -467,7 +467,7 @@ bool Option::getHideReport(int report) const
     if (isReportIDCorrect(report))
     {
         int bitField = 1 << m_reports.at(report).id;
-        hideReport = ((m_hideReport & bitField) != 0);
+        hideReport = (m_hideReport & bitField);
     }
     return hideReport;
 }
@@ -574,7 +574,7 @@ const wxString Option::ReportSettings(int id) const
 {
     const wxString& name = wxString::Format("REPORT_%d", id);
     const wxString& settings = Model_Infotable::instance().GetStringInfo(name, "");
-    Document j_doc_main;
+    Document j_doc_main(nullptr, 1024, nullptr);
     if (j_doc_main.Parse(settings.c_str()).HasParseError()) {
         j_doc_main.Parse(wxString::Format("{\"ID\":%i}", id).c_str());
     }

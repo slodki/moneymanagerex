@@ -191,8 +191,9 @@ wxEND_EVENT_TABLE()
 mmGUIFrame::mmGUIFrame(mmGUIApp* app, const wxString& title
     , const wxPoint& pos
     , const wxSize& size)
-    : wxFrame(0, -1, title, pos, size)
+    : wxFrame(nullptr, -1, title, pos, size)
     , m_app(app)
+    , m_db(nullptr)
     , gotoAccountID_(-1)
     , gotoTransID_(-1)
     , activeReport_(false)
@@ -350,7 +351,7 @@ void mmGUIFrame::ShutdownDatabase()
         m_db->Close();
         delete m_commit_callback_hook;
         delete m_update_callback_hook;
-        m_db.reset();
+        m_db.reset(nullptr);
     }
 }
 
@@ -372,7 +373,7 @@ void mmGUIFrame::cleanupNavTreeControl(wxTreeItemId& item)
             cleanupNavTreeControl(childitem);
         }
         mmTreeItemData* iData = dynamic_cast<mmTreeItemData*>(m_nav_tree_ctrl->GetItemData(item));
-        m_nav_tree_ctrl->SetItemData(item, 0);
+        m_nav_tree_ctrl->SetItemData(item, nullptr);
         if (iData)
             delete iData;
         item = m_nav_tree_ctrl->GetNextSibling(item);
@@ -885,7 +886,7 @@ void mmGUIFrame::loadNavTreeItemsStatus()
     m_nav_tree_ctrl->Expand(root);
 
     const wxString& str = Model_Infotable::instance().GetStringInfo("NAV_TREE_STATUS", "");
-    Document json_doc;
+    Document json_doc(nullptr, 1024, nullptr);
     if (json_doc.Parse(str.c_str()).HasParseError()) {
         json_doc.Parse("{}");
     }
@@ -947,8 +948,8 @@ void mmGUIFrame::OnTreeItemCollapsed(wxTreeEvent& event)
 
 void mmGUIFrame::navTreeStateToJson()
 {
-    StringBuffer json_buffer;
-    PrettyWriter<StringBuffer> json_writer(json_buffer);
+    StringBuffer json_buffer(nullptr);
+    PrettyWriter<StringBuffer> json_writer(json_buffer, nullptr);
     json_writer.StartObject();
 
     std::stack<wxTreeItemId> items;
@@ -1050,7 +1051,7 @@ void mmGUIFrame::OnSelChanged(wxTreeEvent& event)
             createHomePage();
             return;
         }
-        wxCommandEvent *evt = 0;
+        wxCommandEvent *evt = nullptr;
         if (data == "item@Assets")
             evt = new wxCommandEvent(wxEVT_COMMAND_MENU_SELECTED, MENU_ASSETS);
         else if (data == "item@Bills & Deposits")
@@ -1328,8 +1329,8 @@ void mmGUIFrame::OnViewAccountsTemporaryChange(wxCommandEvent& e)
 
 void mmGUIFrame::createBudgetingPage(int budgetYearID)
 {
-    StringBuffer json_buffer;
-    Writer<StringBuffer> json_writer(json_buffer);
+    StringBuffer json_buffer(nullptr);
+    Writer<StringBuffer> json_writer(json_buffer, nullptr);
 
     json_writer.StartObject();
     json_writer.Key("module");
@@ -1370,8 +1371,8 @@ void mmGUIFrame::createBudgetingPage(int budgetYearID)
 
 void mmGUIFrame::createHomePage()
 {
-    StringBuffer json_buffer;
-    Writer<StringBuffer> json_writer(json_buffer);
+    StringBuffer json_buffer(nullptr);
+    Writer<StringBuffer> json_writer(json_buffer, nullptr);
 
     json_writer.StartObject();
     json_writer.Key("module");
@@ -2671,8 +2672,8 @@ void mmGUIFrame::OnBillsDeposits(wxCommandEvent& WXUNUSED(event))
 
 void mmGUIFrame::createBillsDeposits()
 {
-    StringBuffer json_buffer;
-    Writer<StringBuffer> json_writer(json_buffer);
+    StringBuffer json_buffer(nullptr);
+    Writer<StringBuffer> json_writer(json_buffer, nullptr);
 
     json_writer.StartObject();
     json_writer.Key("module");
@@ -2708,8 +2709,8 @@ void mmGUIFrame::createBillsDeposits()
 
 void mmGUIFrame::createCheckingAccountPage(int accountID)
 {
-    StringBuffer json_buffer;
-    Writer<StringBuffer> json_writer(json_buffer);
+    StringBuffer json_buffer(nullptr);
+    Writer<StringBuffer> json_writer(json_buffer, nullptr);
 
     json_writer.StartObject();
     json_writer.Key("module");
@@ -2749,8 +2750,8 @@ void mmGUIFrame::createCheckingAccountPage(int accountID)
 
 void mmGUIFrame::createStocksAccountPage(int accountID)
 {
-    StringBuffer json_buffer;
-    Writer<StringBuffer> json_writer(json_buffer);
+    StringBuffer json_buffer(nullptr);
+    Writer<StringBuffer> json_writer(json_buffer, nullptr);
 
     json_writer.StartObject();
     json_writer.Key("module");
@@ -2801,8 +2802,8 @@ void mmGUIFrame::OnGotoStocksAccount(wxCommandEvent& WXUNUSED(event))
 
 void mmGUIFrame::OnAssets(wxCommandEvent& WXUNUSED(event))
 {
-    StringBuffer json_buffer;
-    Writer<StringBuffer> json_writer(json_buffer);
+    StringBuffer json_buffer(nullptr);
+    Writer<StringBuffer> json_writer(json_buffer, nullptr);
 
     json_writer.StartObject();
     json_writer.Key("module");

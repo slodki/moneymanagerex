@@ -101,8 +101,8 @@ wxSharedPtr<wxSQLite3Database> mmDBWrapper::Open(const wxString &dbpath, const w
     msgDlg.ShowModal();
 
     if (db->IsOpen()) db->Close();
-    db.reset();
-    return db; // return a NULL database pointer
+    db.reset(nullptr);
+    return db; // return a nullptr database pointer
 }
 
 //----------------------------------------------------------------------------

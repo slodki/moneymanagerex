@@ -401,6 +401,7 @@ mmAssetsPanel::mmAssetsPanel(mmGUIFrame* frame, wxWindow *parent, wxWindowID win
     , m_header_text(nullptr)
     , m_listCtrlAssets(nullptr)
     , m_itemStaticTextMainFilter(nullptr)
+    , m_imageList(nullptr)
     , m_tips()
 {
     Create(parent, winid, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, name);

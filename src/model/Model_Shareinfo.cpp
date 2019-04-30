@@ -65,7 +65,7 @@ Model_Shareinfo::Data* Model_Shareinfo::ShareEntry(const int checking_id)
     {
         return Model_Shareinfo::instance().get(list.at(0).SHAREINFOID);
     }
-    return NULL;
+    return nullptr;
 }
 
 void Model_Shareinfo::ShareEntry(int checking_id
@@ -74,7 +74,7 @@ void Model_Shareinfo::ShareEntry(int checking_id
     , double share_commission
     , const wxString& share_lot)
 {
-    Data* share_entry = NULL;
+    Data* share_entry = nullptr;
     Data_Set share_list = ShareList(checking_id);
 
     if (share_list.empty())

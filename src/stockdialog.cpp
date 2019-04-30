@@ -566,7 +566,7 @@ void mmStockDialog::OnHistoryImportButton(wxCommandEvent& WXUNUSED(event))
             return;
         wxProgressDialog* progressDlg = new wxProgressDialog(_("Stock History CSV Import")
             , _("Quotes imported from CSV: "), tFile.GetLineCount()
-            , NULL, wxPD_AUTO_HIDE | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_CAN_ABORT);
+            , nullptr, wxPD_AUTO_HIDE | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_CAN_ABORT);
         long countNumTotal = 0;
         long countImported = 0;
         double price;
@@ -734,7 +734,7 @@ void mmStockDialog::OnHistoryDownloadButton(wxCommandEvent& WXUNUSED(event))
         return;
     }
 
-    Document json_doc;
+    Document json_doc(nullptr, 1024, nullptr);
     if (json_doc.Parse(json_data.c_str()).HasParseError())
     {
         return;

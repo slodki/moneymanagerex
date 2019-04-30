@@ -140,7 +140,7 @@ wxString mmReportMyUsage::getHTMLText()
     {
         usage_by_day[usage.USAGEDATE].first += 1;
 
-        Document json_doc;
+        Document json_doc(nullptr, 1024, nullptr);
         if (json_doc.Parse(usage.JSONCONTENT.c_str()).HasParseError()) {
             continue;
         }

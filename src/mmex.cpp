@@ -41,8 +41,8 @@ static const wxCmdLineEntryDesc g_cmdLineDesc [] =
 
 //----------------------------------------------------------------------------
 
-mmGUIApp::mmGUIApp(): m_frame(0)
-    , m_setting_db(0)
+mmGUIApp::mmGUIApp(): m_frame(nullptr)
+    , m_setting_db(nullptr)
     , m_optParam(wxEmptyString)
     , m_lang(wxLANGUAGE_UNKNOWN)
     , m_locale(wxLANGUAGE_DEFAULT)
@@ -98,7 +98,7 @@ bool mmGUIApp::setGUILanguage(wxLanguage lang)
         else
             msg += _("There are no translation files installed.");
 
-        mmErrorDialogs::MessageWarning(NULL, msg, _("Language change"));
+        mmErrorDialogs::MessageWarning(nullptr, msg, _("Language change"));
         wxDELETE(trans);
         return false;
     }

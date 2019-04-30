@@ -433,7 +433,7 @@ void mmBDDialog::CreateControls()
     itemFlexGridSizer5->Add(repeatTimesBoxSizer);
 
     textNumRepeats_ = new wxTextCtrl(this, ID_DIALOG_BD_TEXTCTRL_NUM_TIMES, ""
-        , wxDefaultPosition, m_date_paid->GetSize(), 0, wxIntegerValidator<int>());
+        , wxDefaultPosition, m_date_paid->GetSize(), 0, wxIntegerValidator<int>(nullptr));
     repeatTimesBoxSizer->Add(textNumRepeats_, g_flagsH);
     textNumRepeats_->SetMaxLength(12);
     setRepeatDetails();
@@ -860,7 +860,10 @@ void mmBDDialog::resetPayeeString()
                 m_bill_data.SUBCATEGID = filtd[0].SUBCATEGID;
 
                 const Model_Category::Data* category = Model_Category::instance().get(m_bill_data.CATEGID);
-                const Model_Subcategory::Data* sub_category = (m_bill_data.SUBCATEGID != -1 ? Model_Subcategory::instance().get(m_bill_data.SUBCATEGID) : 0);
+                const Model_Subcategory::Data* sub_category =
+                    (m_bill_data.SUBCATEGID != -1
+                        ? Model_Subcategory::instance().get(m_bill_data.SUBCATEGID)
+                        : nullptr);
                 bCategory_->SetLabelText(Model_Category::full_name(category, sub_category));
             }
         }

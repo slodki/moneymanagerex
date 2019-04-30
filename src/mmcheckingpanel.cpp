@@ -96,12 +96,13 @@ wxEND_EVENT_TABLE();
 //----------------------------------------------------------------------------
 
 mmCheckingPanel::mmCheckingPanel(wxWindow *parent, mmGUIFrame *frame, int accountID, int id)
-    : m_trans_filter_dlg(0)
+    : m_trans_filter_dlg(nullptr)
     , m_AccountID(accountID)
     , m_filteredBalance(0.0)
-    , m_listCtrlAccount()
+    , m_listCtrlAccount(nullptr)
     , m_account(Model_Account::instance().get(accountID))
     , m_currency(Model_Account::currency(m_account))
+    , m_imageList(nullptr)
     , m_frame(frame)
 {
     long style = wxTAB_TRAVERSAL | wxNO_BORDER;
@@ -717,7 +718,7 @@ void mmCheckingPanel::initViewTransactionsHeader()
 //----------------------------------------------------------------------------
 void mmCheckingPanel::initFilterSettings()
 {
-    mmDateRange* date_range = NULL;
+    mmDateRange* date_range = nullptr;
     bool show_future = !Option::instance().getIgnoreFutureTransactions();
     const wxString& future_date_string = wxDateTime(31, wxDateTime::Dec, 9999).FormatISODate();
     m_begin_date = "";
@@ -775,7 +776,7 @@ void mmCheckingPanel::initFilterSettings()
         }
     }
 
-    if (date_range == NULL) {
+    if (!date_range) {
         date_range = new mmAllTime;
     }
 
@@ -1456,7 +1457,8 @@ int TransactionListCtrl::OnGetItemColumnImage(long item, long column) const
 */
 wxListItemAttr* TransactionListCtrl::OnGetItemAttr(long item) const
 {
-    if (item < 0 || static_cast<size_t>(item) >= m_cp->m_trans.size()) return 0;
+    if (item < 0 || static_cast<size_t>(item) >= m_cp->m_trans.size())
+        return nullptr;
 
     const Model_Checking::Full_Data& tran = m_cp->m_trans[item];
     bool in_the_future = (tran.TRANSDATE > m_today);
@@ -1466,15 +1468,15 @@ wxListItemAttr* TransactionListCtrl::OnGetItemAttr(long item) const
     if (user_colour_id < 0 ) user_colour_id = 0;
     else if (user_colour_id > 7) user_colour_id = 0;
 
-    if (user_colour_id != 0)
+    switch (user_colour_id)
     {
-        if      (user_colour_id == 1) return const_cast<wxListItemAttr*>(&m_attr11);
-        else if (user_colour_id == 2) return const_cast<wxListItemAttr*>(&m_attr12);
-        else if (user_colour_id == 3) return const_cast<wxListItemAttr*>(&m_attr13);
-        else if (user_colour_id == 4) return const_cast<wxListItemAttr*>(&m_attr14);
-        else if (user_colour_id == 5) return const_cast<wxListItemAttr*>(&m_attr15);
-        else if (user_colour_id == 6) return const_cast<wxListItemAttr*>(&m_attr16);
-        else if (user_colour_id == 7) return const_cast<wxListItemAttr*>(&m_attr17);
+        case 1: return const_cast<wxListItemAttr*>(&m_attr11);
+        case 2: return const_cast<wxListItemAttr*>(&m_attr12);
+        case 3: return const_cast<wxListItemAttr*>(&m_attr13);
+        case 4: return const_cast<wxListItemAttr*>(&m_attr14);
+        case 5: return const_cast<wxListItemAttr*>(&m_attr15);
+        case 6: return const_cast<wxListItemAttr*>(&m_attr16);
+        case 7: return const_cast<wxListItemAttr*>(&m_attr17);
     }
     if (in_the_future)
     {

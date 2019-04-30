@@ -800,7 +800,7 @@ void mmQIFImportDialog::OnOk(wxCommandEvent& WXUNUSED(event))
         wxProgressDialog progressDlg(_("Please wait"), _("Importing")
             , numTransactions + 1, this, wxPD_APP_MODAL | wxPD_CAN_ABORT | wxPD_AUTO_HIDE);
         progressDlg.Update(1, _("Importing Accounts"));
-        if (getOrCreateAccounts() == 0 && !accountCheckBox_->GetValue())
+        if (!getOrCreateAccounts() && !accountCheckBox_->GetValue())
         {
             progressDlg.Update(numTransactions + 1);
             return mmErrorDialogs::MessageInvalid(this, _("Account"));

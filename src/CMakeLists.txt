@@ -13,11 +13,13 @@ if(MSVC)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W4")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 else()
+    check_cxx_compiler_flag(-Wzero-as-null-pointer-constant Wzero-as-null-pointer-constant)
     check_cxx_compiler_flag(-Wduplicated-cond Wduplicated-cond)
     check_cxx_compiler_flag(-Wduplicated-branches Wduplicated-branches)
     check_cxx_compiler_flag(-Wnull-dereference Wnull-dereference)
     check_cxx_compiler_flag(-Wlogical-op Wlogical-op)
     add_compile_options(-Wall -Wextra -Wno-unknown-pragmas -Wformat=2
+        $<$<BOOL:${Wzero-as-null-pointer-constant}>:-Werror=zero-as-null-pointer-constant>
         $<$<BOOL:${Wduplicated-cond}>:-Wduplicated-cond>
         $<$<BOOL:${Wduplicated-branches}>:-Wduplicated-branches>
         $<$<BOOL:${Wnull-dereference}>:-Wnull-dereference>

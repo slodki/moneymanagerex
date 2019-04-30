@@ -82,7 +82,7 @@ const wxString mmWebApp::WebApp_getApiVersion()
 //Return function result
 bool mmWebApp::returnResult(int& ErrorCode, wxString& outputMessage)
 {
-    if (ErrorCode == 0 && outputMessage == WebAppParam::MessageSuccedeed)
+    if (!ErrorCode && outputMessage == WebAppParam::MessageSuccedeed)
         return true;
     else
         return false;
@@ -167,8 +167,8 @@ bool mmWebApp::WebApp_DeleteAllAccount()
 // Update Account on WebApp
 bool mmWebApp::WebApp_UpdateAccount()
 {
-    StringBuffer json_buffer;
-    PrettyWriter<StringBuffer> json_writer(json_buffer);
+    StringBuffer json_buffer(nullptr);
+    PrettyWriter<StringBuffer> json_writer(json_buffer, nullptr);
 
     json_writer.StartObject();
     json_writer.Key("Accounts");
@@ -211,8 +211,8 @@ bool mmWebApp::WebApp_DeleteAllPayee()
 //Update payee on WebApp
 bool mmWebApp::WebApp_UpdatePayee()
 {
-    StringBuffer json_buffer;
-    PrettyWriter<StringBuffer> json_writer(json_buffer);
+    StringBuffer json_buffer(nullptr);
+    PrettyWriter<StringBuffer> json_writer(json_buffer, nullptr);
 
     json_writer.StartObject();
     json_writer.Key("Payees");
@@ -268,8 +268,8 @@ bool mmWebApp::WebApp_DeleteAllCategory()
 //Update category on WebApp
 bool mmWebApp::WebApp_UpdateCategory()
 {
-    StringBuffer json_buffer;
-    PrettyWriter<StringBuffer> json_writer(json_buffer);
+    StringBuffer json_buffer(nullptr);
+    PrettyWriter<StringBuffer> json_writer(json_buffer, nullptr);
 
     json_writer.StartObject();
     json_writer.Key("Categories");
@@ -342,7 +342,7 @@ bool mmWebApp::WebApp_DownloadNewTransaction(WebTranVector& WebAppTransactions_,
         return true;
     else
     {
-        Document j_doc;
+        Document j_doc(nullptr, 1024, nullptr);
         if (j_doc.Parse(NewTransactionJSON.c_str()).HasParseError())
             return true;
 

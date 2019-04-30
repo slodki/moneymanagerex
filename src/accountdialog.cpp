@@ -519,11 +519,11 @@ void mmNewAcctDialog::OnImageButton(wxCommandEvent& WXUNUSED(event))
 void mmNewAcctDialog::OnCustonImage(wxCommandEvent& event)
 {
     int selectedImage = (event.GetId() - wxID_HIGHEST) - img::LAST_NAVTREE_PNG + 1;
-    int image_id = Option::instance().getAccountImageId(this->m_account->ACCOUNTID, true);
+    int image_id = Option::instance().getAccountImageId(m_account->ACCOUNTID, true);
 
     Model_Infotable::instance().Set(wxString::Format("ACC_IMAGE_ID_%i", this->m_account->ACCOUNTID)
         , selectedImage);
-    if (selectedImage != 0)
+    if (selectedImage)
         image_id = selectedImage + img::LAST_NAVTREE_PNG - 1;
 
     m_bitmapButtons->SetBitmap(m_imageList->GetBitmap(image_id));

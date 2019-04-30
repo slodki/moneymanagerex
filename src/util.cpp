@@ -33,8 +33,8 @@
 
 wxString JSON_PrettyFormated(rapidjson::Document& j_doc)
 {
-    StringBuffer j_buffer;
-    PrettyWriter<StringBuffer> j_writer(j_buffer);
+    StringBuffer j_buffer(nullptr);
+    PrettyWriter<StringBuffer> j_writer(j_buffer, nullptr);
     j_doc.Accept(j_writer);
 
     return j_buffer.GetString();
@@ -42,8 +42,8 @@ wxString JSON_PrettyFormated(rapidjson::Document& j_doc)
 
 wxString JSON_Formated(rapidjson::Document& j_doc)
 {
-    StringBuffer j_buffer;
-    Writer<StringBuffer> j_writer(j_buffer);
+    StringBuffer j_buffer(nullptr);
+    Writer<StringBuffer> j_writer(j_buffer, nullptr);
     j_doc.Accept(j_writer);
 
     return j_buffer.GetString();
@@ -59,7 +59,7 @@ mmTreeItemData::mmTreeItemData(int id, bool isBudget)
         : id_(id)
         , isString_(false)
         , isBudgetingNode_(isBudget)
-        , report_(0)
+        , report_(nullptr)
     {}
 mmTreeItemData::mmTreeItemData(const wxString& string, mmPrintableBase* report)
         : id_(0)
@@ -80,7 +80,7 @@ mmTreeItemData::mmTreeItemData(const wxString& string)
         , isString_(true)
         , isBudgetingNode_(false)
         , stringData_("item@" + string)
-        , report_(0)
+        , report_(nullptr)
     {}
 mmTreeItemData::~mmTreeItemData()
     {
@@ -174,9 +174,9 @@ curlWriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
   struct curlBuff *mem = static_cast<struct curlBuff *>(userp);
 
   char *tmp = static_cast<char *>(realloc(mem->memory, mem->size + realsize + 1));
-  if (tmp == NULL) {
+  if (!tmp) {
     /* out of memory! */
-    // printf("not enough memory (realloc returned NULL)\n");
+    // printf("not enough memory (realloc returned nullptr)\n");
     return 0;
   }
 
@@ -312,7 +312,7 @@ CURLcode http_post_data(const wxString& sSite, const wxString& sData, const wxSt
     struct curlBuff chunk;
     curl_set_writedata_options(curl, chunk);
 
-    struct curl_slist *headers = NULL;
+    struct curl_slist *headers = nullptr;
     headers = curl_slist_append(headers, sContentType.mb_str());
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
@@ -457,7 +457,7 @@ bool get_yahoo_prices(std::vector<wxString>& symbols
         return false;
     }
 
-    Document json_doc;
+    Document json_doc(nullptr, 1024, nullptr);
     if (json_doc.Parse(json_data.c_str()).HasParseError())
         return false;
 
@@ -545,7 +545,7 @@ bool get_crypto_currency_prices(std::vector<wxString>& symbols, double& usd_rate
         return false;
     }
 
-    Document json_doc;
+    Document json_doc(nullptr, 1024, nullptr);
     if (json_doc.Parse(json_data.c_str()).HasParseError())
         return false;
 
@@ -654,8 +654,8 @@ const wxString mmGetDateForDisplay(const wxString &iso_date)
 
     // Format date, store it and return it.
     wxString date_str = dateFormat;
-    if (date_str.Replace("%Y", iso_date.Mid(0, 4)) == 0) {
-        date_str.Replace("%y", iso_date.Mid(2, 2));
+    if (!date_str.Replace("%Y", iso_date.Mid(0, 4))) {
+         date_str.Replace("%y", iso_date.Mid(2, 2));
     }
     date_str.Replace("%m", iso_date.Mid(5, 2));
     date_str.Replace("%d", iso_date.Mid(8, 2));

@@ -7,7 +7,7 @@
  * @author    Guan Lisheng (guanlisheng@gmail.com)
  * @author    Stefano Giorgio (stef145g)
  * @author    Tomasz Słodkowicz
- * @date      2018-10-07 02:45:31.001407
+ * @date      2019-04-30 03:41:33.533622
  */
 #pragma once
 
@@ -24,8 +24,8 @@ struct DB_Table_CHECKINGACCOUNT : public DB_Table
         /** Return the data records as a json array string */
         wxString to_json() const
         {
-            StringBuffer json_buffer;
-            PrettyWriter<StringBuffer> json_writer(json_buffer);
+            StringBuffer json_buffer(nullptr);
+            PrettyWriter<StringBuffer> json_writer(json_buffer, nullptr);
 
             json_writer.StartArray();
             for (const auto & item: *this)
@@ -50,7 +50,7 @@ struct DB_Table_CHECKINGACCOUNT : public DB_Table
     /** Destructor: clears any data records stored in memory */
     ~DB_Table_CHECKINGACCOUNT()
     {
-        delete this->fake_;
+        delete fake_;
         destroy_cache();
     }
 
@@ -70,7 +70,7 @@ struct DB_Table_CHECKINGACCOUNT : public DB_Table
             try
             {
                 db->ExecuteUpdate("CREATE TABLE CHECKINGACCOUNT(TRANSID integer primary key, ACCOUNTID integer NOT NULL, TOACCOUNTID integer, PAYEEID integer NOT NULL, TRANSCODE TEXT NOT NULL /* Withdrawal, Deposit, Transfer */, TRANSAMOUNT numeric NOT NULL, STATUS TEXT /* None, Reconciled, Void, Follow up, Duplicate */, TRANSACTIONNUMBER TEXT, NOTES TEXT, CATEGID integer, SUBCATEGID integer, TRANSDATE TEXT, FOLLOWUPID integer, TOTRANSAMOUNT numeric)");
-                this->ensure_data(db);
+                ensure_data(db);
             }
             catch(const wxSQLite3Exception &e)
             {
@@ -79,7 +79,7 @@ struct DB_Table_CHECKINGACCOUNT : public DB_Table
             }
         }
 
-        this->ensure_index(db);
+        ensure_index(db);
 
         return true;
     }
@@ -105,91 +105,91 @@ struct DB_Table_CHECKINGACCOUNT : public DB_Table
         db->Begin();
         db->Commit();
     }
-
+    
     struct TRANSID : public DB_Column<int>
     {
         static wxString name() { return "TRANSID"; }
         explicit TRANSID(const int &v, OP op = EQUAL): DB_Column<int>(v, op) {}
     };
-
+    
     struct ACCOUNTID : public DB_Column<int>
     {
         static wxString name() { return "ACCOUNTID"; }
         explicit ACCOUNTID(const int &v, OP op = EQUAL): DB_Column<int>(v, op) {}
     };
-
+    
     struct TOACCOUNTID : public DB_Column<int>
     {
         static wxString name() { return "TOACCOUNTID"; }
         explicit TOACCOUNTID(const int &v, OP op = EQUAL): DB_Column<int>(v, op) {}
     };
-
+    
     struct PAYEEID : public DB_Column<int>
     {
         static wxString name() { return "PAYEEID"; }
         explicit PAYEEID(const int &v, OP op = EQUAL): DB_Column<int>(v, op) {}
     };
-
+    
     struct TRANSCODE : public DB_Column<wxString>
     {
         static wxString name() { return "TRANSCODE"; }
         explicit TRANSCODE(const wxString &v, OP op = EQUAL): DB_Column<wxString>(v, op) {}
     };
-
+    
     struct TRANSAMOUNT : public DB_Column<double>
     {
         static wxString name() { return "TRANSAMOUNT"; }
         explicit TRANSAMOUNT(const double &v, OP op = EQUAL): DB_Column<double>(v, op) {}
     };
-
+    
     struct STATUS : public DB_Column<wxString>
     {
         static wxString name() { return "STATUS"; }
         explicit STATUS(const wxString &v, OP op = EQUAL): DB_Column<wxString>(v, op) {}
     };
-
+    
     struct TRANSACTIONNUMBER : public DB_Column<wxString>
     {
         static wxString name() { return "TRANSACTIONNUMBER"; }
         explicit TRANSACTIONNUMBER(const wxString &v, OP op = EQUAL): DB_Column<wxString>(v, op) {}
     };
-
+    
     struct NOTES : public DB_Column<wxString>
     {
         static wxString name() { return "NOTES"; }
         explicit NOTES(const wxString &v, OP op = EQUAL): DB_Column<wxString>(v, op) {}
     };
-
+    
     struct CATEGID : public DB_Column<int>
     {
         static wxString name() { return "CATEGID"; }
         explicit CATEGID(const int &v, OP op = EQUAL): DB_Column<int>(v, op) {}
     };
-
+    
     struct SUBCATEGID : public DB_Column<int>
     {
         static wxString name() { return "SUBCATEGID"; }
         explicit SUBCATEGID(const int &v, OP op = EQUAL): DB_Column<int>(v, op) {}
     };
-
+    
     struct TRANSDATE : public DB_Column<wxString>
     {
         static wxString name() { return "TRANSDATE"; }
         explicit TRANSDATE(const wxString &v, OP op = EQUAL): DB_Column<wxString>(v, op) {}
     };
-
+    
     struct FOLLOWUPID : public DB_Column<int>
     {
         static wxString name() { return "FOLLOWUPID"; }
         explicit FOLLOWUPID(const int &v, OP op = EQUAL): DB_Column<int>(v, op) {}
     };
-
+    
     struct TOTRANSAMOUNT : public DB_Column<double>
     {
         static wxString name() { return "TOTRANSAMOUNT"; }
         explicit TOTRANSAMOUNT(const double &v, OP op = EQUAL): DB_Column<double>(v, op) {}
     };
-
+    
     typedef TRANSID PRIMARY;
     enum COLUMN
     {
@@ -255,14 +255,14 @@ struct DB_Table_CHECKINGACCOUNT : public DB_Table
 
         return COL_UNKNOWN;
     }
-
+    
     /** Data is a single record in the database table*/
     struct Data
     {
         friend struct DB_Table_CHECKINGACCOUNT;
         /** This is a instance pointer to itself in memory. */
         Self* table_;
-
+    
         int TRANSID; // primary key
         int ACCOUNTID;
         int TOACCOUNTID;
@@ -290,18 +290,18 @@ struct DB_Table_CHECKINGACCOUNT : public DB_Table
 
         bool operator < (const Data& r) const
         {
-            return this->id() < r.id();
+            return id() < r.id();
         }
 
         bool operator < (const Data* r) const
         {
-            return this->id() < r->id();
+            return id() < r->id();
         }
 
-        explicit Data(Self* table = 0)
+        explicit Data(Self* table = nullptr)
         {
             table_ = table;
-
+        
             TRANSID = -1;
             ACCOUNTID = -1;
             TOACCOUNTID = -1;
@@ -313,10 +313,10 @@ struct DB_Table_CHECKINGACCOUNT : public DB_Table
             TOTRANSAMOUNT = 0.0;
         }
 
-        explicit Data(wxSQLite3ResultSet& q, Self* table = 0)
+        explicit Data(wxSQLite3ResultSet& q, Self* table = nullptr)
         {
             table_ = table;
-
+        
             TRANSID = q.GetInt(0);
             ACCOUNTID = q.GetInt(1);
             TOACCOUNTID = q.GetInt(2);
@@ -428,11 +428,11 @@ struct DB_Table_CHECKINGACCOUNT : public DB_Table
         /** Return the data record as a json string */
         wxString to_json() const
         {
-            StringBuffer json_buffer;
-            PrettyWriter<StringBuffer> json_writer(json_buffer);
+            StringBuffer json_buffer(nullptr);
+            PrettyWriter<StringBuffer> json_writer(json_buffer, nullptr);
 
             json_writer.StartObject();
-            this->as_json(json_writer);
+            as_json(json_writer);
             json_writer.EndObject();
 
             return json_buffer.GetString();
@@ -701,7 +701,7 @@ struct DB_Table_CHECKINGACCOUNT : public DB_Table
 
         ++ miss_;
 
-        return 0;
+        return nullptr;
     }
 
     /**
@@ -713,7 +713,7 @@ struct DB_Table_CHECKINGACCOUNT : public DB_Table
         if (id <= 0)
         {
             ++ skip_;
-            return 0;
+            return nullptr;
         }
 
         Index_By_Id::iterator it = index_by_id_.find(id);
@@ -724,11 +724,11 @@ struct DB_Table_CHECKINGACCOUNT : public DB_Table
         }
 
         ++ miss_;
-        Self::Data* entity = 0;
+        Self::Data* entity = nullptr;
         wxString where = wxString::Format(" WHERE %s = ?", PRIMARY::name().c_str());
         try
         {
-            wxSQLite3Statement stmt = db->PrepareStatement(this->query() + where);
+            wxSQLite3Statement stmt = db->PrepareStatement(query() + where);
             stmt.Bind(1, id);
 
             wxSQLite3ResultSet q = stmt.ExecuteQuery();
@@ -742,13 +742,13 @@ struct DB_Table_CHECKINGACCOUNT : public DB_Table
         }
         catch(const wxSQLite3Exception &e)
         {
-            wxLogError("%s: Exception %s", this->name().c_str(), e.GetMessage().c_str());
+            wxLogError("%s: Exception %s", name().c_str(), e.GetMessage().c_str());
         }
 
         if (!entity)
         {
-            entity = this->fake_;
-            // wxLogError("%s: %d not found", this->name().c_str(), id);
+            entity = fake_;
+            // wxLogError("%s: %d not found", name().c_str(), id);
         }
 
         return entity;
@@ -763,7 +763,7 @@ struct DB_Table_CHECKINGACCOUNT : public DB_Table
         Data_Set result;
         try
         {
-            wxSQLite3ResultSet q = db->ExecuteQuery(col == COLUMN(0) ? this->query() : this->query() + " ORDER BY " + column_to_name(col) + " COLLATE NOCASE " + (asc ? " ASC " : " DESC "));
+            wxSQLite3ResultSet q = db->ExecuteQuery(col == COLUMN(0) ? query() : query() + " ORDER BY " + column_to_name(col) + " COLLATE NOCASE " + (asc ? " ASC " : " DESC "));
 
             while(q.NextRow())
             {
@@ -775,7 +775,7 @@ struct DB_Table_CHECKINGACCOUNT : public DB_Table
         }
         catch(const wxSQLite3Exception &e)
         {
-            wxLogError("%s: Exception %s", this->name().c_str(), e.GetMessage().c_str());
+            wxLogError("%s: Exception %s", name().c_str(), e.GetMessage().c_str());
         }
 
         return result;

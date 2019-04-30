@@ -75,8 +75,8 @@ void Model_Usage::AppendToCache(const wxString& json_string)
 
 wxString Model_Usage::To_JSON_String() const
 {
-    StringBuffer json_buffer;
-    PrettyWriter<StringBuffer> json_writer(json_buffer);
+    StringBuffer json_buffer(nullptr);
+    PrettyWriter<StringBuffer> json_writer(json_buffer, nullptr);
 
     json_writer.StartObject();
     json_writer.Key("start");

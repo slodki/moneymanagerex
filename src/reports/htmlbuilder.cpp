@@ -477,7 +477,7 @@ void mmHTMLBuilder::addPieChart(std::vector<ValueTrio>& valueList, const wxStrin
     int precision = Model_Currency::precision(Model_Currency::GetBaseCurrency());
     int round = pow(10, precision);
 
-    Document jsonDoc;
+    Document jsonDoc(nullptr, 1024, nullptr);
     jsonDoc.SetObject();
     Value data_array(kArrayType);
     Document::AllocatorType& allocator = jsonDoc.GetAllocator();
@@ -514,8 +514,8 @@ void mmHTMLBuilder::addPieChart(std::vector<ValueTrio>& valueList, const wxStrin
     jsonDoc.AddMember("options", optionsValue, allocator);
 
 
-    StringBuffer strbuf;
-    Writer<StringBuffer> writer(strbuf);
+    StringBuffer strbuf(nullptr);
+    Writer<StringBuffer> writer(strbuf, nullptr);
     jsonDoc.Accept(writer);
 
     const wxString data = strbuf.GetString();
@@ -538,7 +538,7 @@ void mmHTMLBuilder::addBarChart(const wxArrayString& labels
 
     int precision = Model_Currency::precision(Model_Currency::GetBaseCurrency());
 
-    Document jsonDoc;
+    Document jsonDoc(nullptr, 1024, nullptr);
     jsonDoc.SetObject();
     Document::AllocatorType& allocator = jsonDoc.GetAllocator();
 
@@ -614,8 +614,8 @@ void mmHTMLBuilder::addBarChart(const wxArrayString& labels
     optionsValue.AddMember("scaleSteps", steps, allocator);
     jsonDoc.AddMember("options", optionsValue, allocator);
 
-    StringBuffer strbuf;
-    Writer<StringBuffer> writer(strbuf);
+    StringBuffer strbuf(nullptr);
+    Writer<StringBuffer> writer(strbuf, nullptr);
     jsonDoc.Accept(writer);
 
     const wxString d = strbuf.GetString();
@@ -636,7 +636,7 @@ var reportChart = new Chart(ctx).Line(d.data, d.options);
     int precision = Model_Currency::precision(Model_Currency::GetBaseCurrency());
     int round = pow(10, precision);
 
-    Document jsonDoc;
+    Document jsonDoc(nullptr, 1024, nullptr);
     jsonDoc.SetObject();
     Document::AllocatorType& allocator = jsonDoc.GetAllocator();
 
@@ -696,8 +696,8 @@ var reportChart = new Chart(ctx).Line(d.data, d.options);
     jsonDoc.AddMember("options", optionsValue, allocator);
     jsonDoc.AddMember("data", dObjValue, allocator);
 
-    StringBuffer strbuf;
-    Writer<StringBuffer> writer(strbuf);
+    StringBuffer strbuf(nullptr);
+    Writer<StringBuffer> writer(strbuf, nullptr);
     jsonDoc.Accept(writer);
 
     const wxString d = strbuf.GetString();

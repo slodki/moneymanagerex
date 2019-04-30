@@ -466,7 +466,7 @@ wxString mmUnivCSVDialog::GetStoredSettings(int id)
 
 void mmUnivCSVDialog::SetSettings(const wxString &json_data)
 {
-    Document json_doc;
+    Document json_doc(nullptr, 1024, nullptr);
     if (json_doc.Parse(json_data.c_str()).HasParseError()) {
         json_doc.Parse("{}");
     }
@@ -699,8 +699,8 @@ void mmUnivCSVDialog::OnLoad()
 //Saves the field order to a template file
 void mmUnivCSVDialog::OnSave(wxCommandEvent& WXUNUSED(event))
 {
-    StringBuffer json_buffer;
-    PrettyWriter<StringBuffer> json_writer(json_buffer);
+    StringBuffer json_buffer(nullptr);
+    PrettyWriter<StringBuffer> json_writer(json_buffer, nullptr);
     json_writer.StartObject();
 
     wxRadioBox* c = static_cast<wxRadioBox*>(FindWindow(wxID_APPLY));
@@ -1549,7 +1549,7 @@ void mmUnivCSVDialog::parseToken(int index, const wxString& orig_token, tran_hol
         if (holder.CategoryID == -1)
             return;
 
-        sub_category = (!token.IsEmpty() ? Model_Subcategory::instance().get(token, holder.CategoryID) : 0);
+        sub_category = (!token.IsEmpty() ? Model_Subcategory::instance().get(token, holder.CategoryID) : nullptr);
         if (!sub_category)
         {
             sub_category = Model_Subcategory::instance().create();

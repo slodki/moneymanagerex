@@ -360,7 +360,7 @@ void mmFilterTransactionsDialog::CreateControls()
         const wxString& data = Model_Infotable::instance().GetStringInfo(
             wxString::Format("TRANSACTIONS_FILTER_%d", i)
             , "");
-        Document j_doc;
+        Document j_doc(nullptr, 1024, nullptr);
         if (j_doc.Parse(data.c_str()).HasParseError()) {
             j_doc.Parse("{}");
         }
@@ -823,8 +823,8 @@ void mmFilterTransactionsDialog::getDescription(mmHTMLBuilder &hb)
 
 wxString mmFilterTransactionsDialog::to_json(bool i18n)
 {
-    StringBuffer json_buffer;
-    PrettyWriter<StringBuffer> json_writer(json_buffer);
+    StringBuffer json_buffer(nullptr);
+    PrettyWriter<StringBuffer> json_writer(json_buffer, nullptr);
     json_writer.StartObject();
 
     if (accountCheckBox_->IsChecked())
@@ -950,7 +950,7 @@ wxString mmFilterTransactionsDialog::to_json(bool i18n)
 
 void mmFilterTransactionsDialog::from_json(const wxString &data)
 {
-    Document j_doc;
+    Document j_doc(nullptr, 1024, nullptr);
     if (j_doc.Parse(data.c_str()).HasParseError()) {
         j_doc.Parse("{}");
     }
@@ -1020,7 +1020,7 @@ void mmFilterTransactionsDialog::from_json(const wxString &data)
     {
         categID_ = category->CATEGID;
     }
-    Model_Subcategory::Data* sub_category = 0;
+    Model_Subcategory::Data* sub_category = nullptr;
     const wxString& subcateg_name = categ_token.GetNextToken().Trim(false);
     if (!subcateg_name.IsEmpty())
     {

@@ -794,8 +794,8 @@ const wxString mmHomePagePanel::getIncomeVsExpensesJSON() const
         if (s > 0) scaleStepWidth = ceil(scaleStepWidth / s)*s;
     }
 
-    StringBuffer json_buffer;
-    PrettyWriter<StringBuffer> json_writer(json_buffer);
+    StringBuffer json_buffer(nullptr);
+    PrettyWriter<StringBuffer> json_writer(json_buffer, nullptr);
     json_writer.StartObject();
     json_writer.Key("0");
     json_writer.String(wxString::Format(_("Income vs Expenses: %s"), date_range_->local_title()).c_str());
@@ -839,8 +839,8 @@ const wxString mmHomePagePanel::getAssetsJSON(double& tBalance) const
     double asset_balance = Model_Asset::instance().balance();
     tBalance += asset_balance;
 
-    StringBuffer json_buffer;
-    PrettyWriter<StringBuffer> json_writer(json_buffer);
+    StringBuffer json_buffer(nullptr);
+    PrettyWriter<StringBuffer> json_writer(json_buffer, nullptr);
     json_writer.StartObject();
     json_writer.Key("NAME");
     json_writer.String(_("Assets").c_str());
@@ -856,8 +856,8 @@ const wxString mmHomePagePanel::getAssetsJSON(double& tBalance) const
 
 const wxString mmHomePagePanel::getStatWidget() const
 {
-    StringBuffer json_buffer;
-    PrettyWriter<StringBuffer> json_writer(json_buffer);
+    StringBuffer json_buffer(nullptr);
+    PrettyWriter<StringBuffer> json_writer(json_buffer, nullptr);
     json_writer.StartObject();
 
     json_writer.Key("NAME");
@@ -883,8 +883,8 @@ const wxString mmHomePagePanel::getGrandTotalsJSON(double& tBalance) const
 {
     const wxString tBalanceStr = Model_Currency::toCurrency(tBalance);
 
-    StringBuffer json_buffer;
-    PrettyWriter<StringBuffer> json_writer(json_buffer);
+    StringBuffer json_buffer(nullptr);
+    PrettyWriter<StringBuffer> json_writer(json_buffer, nullptr);
     json_writer.StartObject();
     json_writer.Key("NAME");
     json_writer.String(_("Grand Total:").c_str());
@@ -912,7 +912,7 @@ void mmHomePagePanel::OnLinkClicked(wxWebViewEvent& event)
         wxLogDebug("======= mmHomePagePanel::OnLinkClicked =======");
         wxLogDebug("Name = %s", name);
 
-        Document json_doc;
+        Document json_doc(nullptr, 1024, nullptr);
         if (json_doc.Parse(str.c_str()).HasParseError())
             return;
 

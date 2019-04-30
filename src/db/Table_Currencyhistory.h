@@ -7,7 +7,7 @@
  * @author    Guan Lisheng (guanlisheng@gmail.com)
  * @author    Stefano Giorgio (stef145g)
  * @author    Tomasz Słodkowicz
- * @date      2018-10-07 02:45:31.001407
+ * @date      2019-04-30 03:41:33.533622
  */
 #pragma once
 
@@ -24,8 +24,8 @@ struct DB_Table_CURRENCYHISTORY : public DB_Table
         /** Return the data records as a json array string */
         wxString to_json() const
         {
-            StringBuffer json_buffer;
-            PrettyWriter<StringBuffer> json_writer(json_buffer);
+            StringBuffer json_buffer(nullptr);
+            PrettyWriter<StringBuffer> json_writer(json_buffer, nullptr);
 
             json_writer.StartArray();
             for (const auto & item: *this)
@@ -50,7 +50,7 @@ struct DB_Table_CURRENCYHISTORY : public DB_Table
     /** Destructor: clears any data records stored in memory */
     ~DB_Table_CURRENCYHISTORY()
     {
-        delete this->fake_;
+        delete fake_;
         destroy_cache();
     }
 
@@ -70,7 +70,7 @@ struct DB_Table_CURRENCYHISTORY : public DB_Table
             try
             {
                 db->ExecuteUpdate("CREATE TABLE CURRENCYHISTORY(CURRHISTID INTEGER PRIMARY KEY, CURRENCYID INTEGER NOT NULL, CURRDATE TEXT NOT NULL, CURRVALUE NUMERIC NOT NULL, CURRUPDTYPE INTEGER, UNIQUE(CURRENCYID, CURRDATE))");
-                this->ensure_data(db);
+                ensure_data(db);
             }
             catch(const wxSQLite3Exception &e)
             {
@@ -79,7 +79,7 @@ struct DB_Table_CURRENCYHISTORY : public DB_Table
             }
         }
 
-        this->ensure_index(db);
+        ensure_index(db);
 
         return true;
     }
@@ -104,37 +104,37 @@ struct DB_Table_CURRENCYHISTORY : public DB_Table
         db->Begin();
         db->Commit();
     }
-
+    
     struct CURRHISTID : public DB_Column<int>
     {
         static wxString name() { return "CURRHISTID"; }
         explicit CURRHISTID(const int &v, OP op = EQUAL): DB_Column<int>(v, op) {}
     };
-
+    
     struct CURRENCYID : public DB_Column<int>
     {
         static wxString name() { return "CURRENCYID"; }
         explicit CURRENCYID(const int &v, OP op = EQUAL): DB_Column<int>(v, op) {}
     };
-
+    
     struct CURRDATE : public DB_Column<wxString>
     {
         static wxString name() { return "CURRDATE"; }
         explicit CURRDATE(const wxString &v, OP op = EQUAL): DB_Column<wxString>(v, op) {}
     };
-
+    
     struct CURRVALUE : public DB_Column<double>
     {
         static wxString name() { return "CURRVALUE"; }
         explicit CURRVALUE(const double &v, OP op = EQUAL): DB_Column<double>(v, op) {}
     };
-
+    
     struct CURRUPDTYPE : public DB_Column<int>
     {
         static wxString name() { return "CURRUPDTYPE"; }
         explicit CURRUPDTYPE(const int &v, OP op = EQUAL): DB_Column<int>(v, op) {}
     };
-
+    
     typedef CURRHISTID PRIMARY;
     enum COLUMN
     {
@@ -173,14 +173,14 @@ struct DB_Table_CURRENCYHISTORY : public DB_Table
 
         return COL_UNKNOWN;
     }
-
+    
     /** Data is a single record in the database table*/
     struct Data
     {
         friend struct DB_Table_CURRENCYHISTORY;
         /** This is a instance pointer to itself in memory. */
         Self* table_;
-
+    
         int CURRHISTID; // primary key
         int CURRENCYID;
         wxString CURRDATE;
@@ -199,28 +199,28 @@ struct DB_Table_CURRENCYHISTORY : public DB_Table
 
         bool operator < (const Data& r) const
         {
-            return this->id() < r.id();
+            return id() < r.id();
         }
 
         bool operator < (const Data* r) const
         {
-            return this->id() < r->id();
+            return id() < r->id();
         }
 
-        explicit Data(Self* table = 0)
+        explicit Data(Self* table = nullptr)
         {
             table_ = table;
-
+        
             CURRHISTID = -1;
             CURRENCYID = -1;
             CURRVALUE = 0.0;
             CURRUPDTYPE = -1;
         }
 
-        explicit Data(wxSQLite3ResultSet& q, Self* table = 0)
+        explicit Data(wxSQLite3ResultSet& q, Self* table = nullptr)
         {
             table_ = table;
-
+        
             CURRHISTID = q.GetInt(0);
             CURRENCYID = q.GetInt(1);
             CURRDATE = q.GetString(2);
@@ -269,11 +269,11 @@ struct DB_Table_CURRENCYHISTORY : public DB_Table
         /** Return the data record as a json string */
         wxString to_json() const
         {
-            StringBuffer json_buffer;
-            PrettyWriter<StringBuffer> json_writer(json_buffer);
+            StringBuffer json_buffer(nullptr);
+            PrettyWriter<StringBuffer> json_writer(json_buffer, nullptr);
 
             json_writer.StartObject();
-            this->as_json(json_writer);
+            as_json(json_writer);
             json_writer.EndObject();
 
             return json_buffer.GetString();
@@ -497,7 +497,7 @@ struct DB_Table_CURRENCYHISTORY : public DB_Table
 
         ++ miss_;
 
-        return 0;
+        return nullptr;
     }
 
     /**
@@ -509,7 +509,7 @@ struct DB_Table_CURRENCYHISTORY : public DB_Table
         if (id <= 0)
         {
             ++ skip_;
-            return 0;
+            return nullptr;
         }
 
         Index_By_Id::iterator it = index_by_id_.find(id);
@@ -520,11 +520,11 @@ struct DB_Table_CURRENCYHISTORY : public DB_Table
         }
 
         ++ miss_;
-        Self::Data* entity = 0;
+        Self::Data* entity = nullptr;
         wxString where = wxString::Format(" WHERE %s = ?", PRIMARY::name().c_str());
         try
         {
-            wxSQLite3Statement stmt = db->PrepareStatement(this->query() + where);
+            wxSQLite3Statement stmt = db->PrepareStatement(query() + where);
             stmt.Bind(1, id);
 
             wxSQLite3ResultSet q = stmt.ExecuteQuery();
@@ -538,13 +538,13 @@ struct DB_Table_CURRENCYHISTORY : public DB_Table
         }
         catch(const wxSQLite3Exception &e)
         {
-            wxLogError("%s: Exception %s", this->name().c_str(), e.GetMessage().c_str());
+            wxLogError("%s: Exception %s", name().c_str(), e.GetMessage().c_str());
         }
 
         if (!entity)
         {
-            entity = this->fake_;
-            // wxLogError("%s: %d not found", this->name().c_str(), id);
+            entity = fake_;
+            // wxLogError("%s: %d not found", name().c_str(), id);
         }
 
         return entity;
@@ -559,7 +559,7 @@ struct DB_Table_CURRENCYHISTORY : public DB_Table
         Data_Set result;
         try
         {
-            wxSQLite3ResultSet q = db->ExecuteQuery(col == COLUMN(0) ? this->query() : this->query() + " ORDER BY " + column_to_name(col) + " COLLATE NOCASE " + (asc ? " ASC " : " DESC "));
+            wxSQLite3ResultSet q = db->ExecuteQuery(col == COLUMN(0) ? query() : query() + " ORDER BY " + column_to_name(col) + " COLLATE NOCASE " + (asc ? " ASC " : " DESC "));
 
             while(q.NextRow())
             {
@@ -571,7 +571,7 @@ struct DB_Table_CURRENCYHISTORY : public DB_Table
         }
         catch(const wxSQLite3Exception &e)
         {
-            wxLogError("%s: Exception %s", this->name().c_str(), e.GetMessage().c_str());
+            wxLogError("%s: Exception %s", name().c_str(), e.GetMessage().c_str());
         }
 
         return result;

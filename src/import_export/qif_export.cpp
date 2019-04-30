@@ -246,7 +246,7 @@ void mmQIFExportDialog::OnAccountsButton(wxCommandEvent& WXUNUSED(event))
     }
     *log_field_ << baloon;
 
-    if (selected_accounts_id_.GetCount() == 0)
+    if (selected_accounts_id_.IsEmpty())
     {
         fillControls();
     }

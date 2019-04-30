@@ -315,7 +315,7 @@ void mmMainCurrencyDialog::CreateControls()
 
 void mmMainCurrencyDialog::OnBtnAdd(wxCommandEvent& WXUNUSED(event))
 {
-    mmCurrencyDialog dlg(this, 0);
+    mmCurrencyDialog dlg(this, nullptr);
     if (dlg.ShowModal() == wxID_OK)
     {
         m_currency_id = dlg.getCurrencyID();
@@ -369,7 +369,7 @@ bool mmMainCurrencyDialog::Execute(int& currencyID)
 {
     bool result = false;
 
-    mmMainCurrencyDialog dlg(NULL, currencyID);
+    mmMainCurrencyDialog dlg(nullptr, currencyID);
     dlg.m_static_dialog = true;
     dlg.SetTitle(_("Base Currency Selection"));
     dlg.valueListBox_->Enable(false);
@@ -876,7 +876,7 @@ bool mmMainCurrencyDialog::GetOnlineHistory(std::map<wxDateTime, double> &histor
         return false;
     }
 
-    Document json_doc;
+    Document json_doc(nullptr, 1024, nullptr);
     if (json_doc.Parse(json_data.c_str()).HasParseError())
     {
         return false;

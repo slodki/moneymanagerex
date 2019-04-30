@@ -20,7 +20,7 @@
 #include "constants.h"
 #include "util.h"
 #include "Model_Setting.h"
-#include "rapidjson/error/en.h"
+#include <rapidjson/error/en.h>
 /*
 #include "paths.h"
 #include <wx/progdlg.h>
@@ -344,7 +344,7 @@ void mmUpdate::checkUpdates(const bool bSilent, wxFrame *frame)
 
     // https://developer.github.com/v3/repos/releases/#list-releases-for-a-repository
 
-    Document json_releases;
+    Document json_releases(nullptr, 1024, nullptr);
     ParseResult res = json_releases.Parse(resp.c_str());
     if (!res || !json_releases.IsArray())
     {

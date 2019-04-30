@@ -243,8 +243,8 @@ bool mmReportsPanel::saveReportText(wxString& error, bool initial)
         }
     }
 
-    StringBuffer json_buffer;
-    Writer<StringBuffer> json_writer(json_buffer);
+    StringBuffer json_buffer(nullptr);
+    Writer<StringBuffer> json_writer(json_buffer, nullptr);
 
     json_writer.StartObject();
     json_writer.Key("module");
@@ -369,7 +369,7 @@ void mmReportsPanel::CreateControls()
             itemBoxSizerHeader->AddSpacer(5);
 
             m_date_ranges = new wxChoice(itemPanel3, ID_CHOICE_DATE_RANGE
-                , wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_SORT);
+                , wxDefaultPosition, wxDefaultSize, 0, nullptr, wxCB_SORT);
 
             int prev_selection = rb_->getDateSelection();
             int cur_selection = 0;

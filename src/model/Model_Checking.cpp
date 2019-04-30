@@ -297,7 +297,7 @@ wxString Model_Checking::toShortStatus(const wxString& fullStatus)
     return fullStatus.Left(1) == "N" ? "" : fullStatus.Left(1);
 }
 
-Model_Checking::Full_Data::Full_Data() : Data(0), AMOUNT(0), BALANCE(0)
+Model_Checking::Full_Data::Full_Data() : Data(), AMOUNT(0), BALANCE(0)
 {
 }
 
@@ -512,8 +512,8 @@ void Model_Checking::putDataToTransaction(Data *r, const Data &data)
 
 const wxString Model_Checking::Full_Data::to_json()
 {
-    StringBuffer json_buffer;
-    PrettyWriter<StringBuffer> json_writer(json_buffer);
+    StringBuffer json_buffer(nullptr);
+    PrettyWriter<StringBuffer> json_writer(json_buffer, nullptr);
     json_writer.StartObject();
 
     Model_Checking::Data::as_json(json_writer);
