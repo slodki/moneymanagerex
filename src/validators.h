@@ -32,7 +32,6 @@ public:
     void OnChar(wxKeyEvent& event);
 
 private:
-    wxDECLARE_NO_ASSIGN_CLASS(mmCalcValidator);
     DECLARE_DYNAMIC_CLASS(mmCalcValidator)
     DECLARE_EVENT_TABLE()
 };

@@ -4,3 +4,4 @@ plugins:
   remark-preset-lint-recommended:
     lint-no-shortcut-reference-link: false
     lint-no-shortcut-reference-image: false
+    lint-definition-case: false

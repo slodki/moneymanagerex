@@ -9,7 +9,8 @@ import sys
 import re
 import glob
 import subprocess
-from io import open
+if sys.version_info[0] < 3:
+    from io import open
 
 numbers = re.compile(r'(\d+)')
 def numericalSort(value):

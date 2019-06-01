@@ -8,7 +8,8 @@ import sys
 import os
 import sqlite3
 import subprocess
-from io import open
+if sys.version_info[0] < 3:
+    from io import open
 
 currency_unicode_patch_filename = 'currencies_update_patch_unicode_only.mmdbg'
 currency_table_patch_filename = 'currencies_update_patch.mmdbg'
