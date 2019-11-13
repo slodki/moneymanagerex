@@ -1,14 +1,14 @@
 version: '{build}'
 image:
 - Visual Studio 2019
-- Visual Studio 2017
+# - Visual Studio 2017
 # - Visual Studio 2015
 configuration:
 - Release
 # - Debug
 platform:
 - x64
-- x86
+# - x86
 
 matrix:
   fast_finish: true
@@ -134,6 +134,7 @@ install:
 #       TARGET_CPU=%platform% DEBUG_INFO=default SHARED=%wxShared% VENDOR=mmex %wxFlags%
 #       wxUSE_UNSAFE_WXSTRING_CONV=0
 #   )
+- dir /a /s %VCPKG_ROOT%\installed
 
 before_build:
 - cd %APPVEYOR_BUILD_FOLDER%
