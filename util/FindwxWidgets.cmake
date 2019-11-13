@@ -446,6 +446,7 @@ if(wxWidgets_FIND_STYLE STREQUAL "win32")
       C:/
       D:/
       ENV ProgramFiles
+      C:/Tools/vcpkg/installed/x64-windows
     PATH_SUFFIXES
       wxWidgets-3.1.0
       wxWidgets-3.0.2
